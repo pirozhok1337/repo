@@ -12,5 +12,3 @@ class Tabs
     visuals = null; // args: void
     players = null; // args: void
 }
-
-(async function() { await ImGui.default(); })();

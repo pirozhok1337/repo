@@ -78,14 +78,7 @@ function mainEvent(time)
             frameCounter = 0;
         }
 
-        try
-        {
-            CheatMenu.draw(time);
-        }
-        catch (e)
-        {
-            console.log(`et ppc: ${e}`);
-        }
+        CheatMenu.draw(time);
     }
 
     requestAnimationFrame(mainEvent);

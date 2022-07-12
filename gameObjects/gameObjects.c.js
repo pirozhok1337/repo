@@ -148,7 +148,7 @@ GameObjects.getLocalPlayer = function ()
 
     gameObjects.world = null;
     
-    return null;
+    return gameObjects.localPlayer = localPlayer.data.components_0.array;
 }
 
 GameObjects.getPhysicsComponent = function ()

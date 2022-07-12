@@ -85,6 +85,7 @@ AirBreak.process = function (localPlayer)
         }
         else
         {
+            physicsComponent.body.movable = true;
             physicsComponent.body.state.velocity.x = 0;
             physicsComponent.body.state.velocity.y = 0;
             physicsComponent.body.state.velocity.z = 0;
