@@ -1,9 +1,17 @@
 // striker.c.js
 
-let shellCache = null;
-let state = false;
-let salvoRocketsCount = 8;
-let targetId;
+strikerData = 
+{
+    aimBot: new ImGui_Var(true),
+    shellsTeleport: new ImGui_Var(true),
+    noLaser: new ImGui_Var(true),
+    state: false,
+    salvoRocketsCount: 8,
+    shellsTimeout: null,
+    type: "striker",
+    shellCache: null,
+    getTargetWithScope: new ImGui_Var(true)
+};
 
 Striker.init = function (localPlayer)
 {
@@ -26,33 +34,49 @@ Striker.init = function (localPlayer)
         return;
     }
 
-    let targetingSystem = striker.targetingSystem_0.targetingSystem_vutpoz$_0;
-
-    if (!targetingSystem)
+    if (strikerData.type == "striker")
     {
-        targetingSystem = striker.targetingSystem_0.targetingSystem_0;
+        strikerData.salvoRocketsCount = striker.salvoRocketsCount;
+
+        if (striker.targetingSystem_0 && striker.targetingSystem_0.targetingSystem_vutpoz$_0)
+        {
+            let targetingSystem_0 = striker.targetingSystem_0.targetingSystem_vutpoz$_0;
+
+            if (targetingSystem_0.directionCalculator_0 &&
+                targetingSystem_0.directionCalculator_0.targetingSectorsCalculator_0)
+            {
+                let targetingSectorsCalculator_0 = targetingSystem_0.directionCalculator_0.
+                    targetingSectorsCalculator_0;
+            
+                targetingSectorsCalculator_0.maxElevationAngle_0 = 100000;
+                targetingSectorsCalculator_0.minElevationAngle_0 = -100000;
+            }
+        }
+    }
+    else
+    {
+        strikerData.salvoRocketsCount = striker.scorpioData_0.secondarySalvoSize;
     }
 
-    let targetingSectorsCalculator = targetingSystem.directionCalculator_0.targetingSectorsCalculator_0;
-
-    targetingSectorsCalculator.maxElevationAngle_0 = 100000;
-    targetingSectorsCalculator.minElevationAngle_0 = -100000;
-
-    salvoRocketsCount = striker.salvoRocketsCount;
-
-    striker.__proto__.lockTarget_gcez93$ = function (t, e, n)
+    striker.lockTarget_gcez93$ = function (t, e, n)
     {
-        striker.stopAiming();
-        this.lockTarget_gcez93$$default(t, e);
-        targetId = t.targetId;
-        return true;
+        if (strikerData.aimBot.value)
+        {
+            strikerData.getTargetWithScope.value ? targetId = e : t.targetId = targetId;
+            this.lockTarget_gcez93$$default(t, targetId);
+            return true;
+        }
+        else
+        {
+            return void 0 === e && (e = null), n ? n(t, e) : this.lockTarget_gcez93$$default(t, e);
+        }
     }
 
     for (let i = 0; i < localPlayer.length; i++)
     {
         if (localPlayer.at(i).hasOwnProperty("shellCache_0"))
         {
-            shellCache = localPlayer.at(i).shellCache_0.itemsInUse_123ot1$_0.array_hd7ov6$_0;
+            strikerData.shellCache = localPlayer.at(i).shellCache_0.itemsInUse.array_hd7ov6$_0;
             break;
         }
     }
@@ -79,66 +103,89 @@ Striker.process = function (localPlayer)
         return;
     }
 
-    if (KeyPressing.isKeyPressed(82 /*key: R*/) && Utils.isNotOpenChat())
+    if (!strikerData.shellCache)
     {
-        striker.explodeRockets();
+        return;
     }
 
-    if (shellCache)
+    if (strikerData.type == "striker" && strikerData.noLaser.value)
     {
-        if (shellCache.length == salvoRocketsCount)
+        striker.stopAiming();
+    }
+
+    if (!strikerData.shellsTeleport.value)
+    {
+        return;
+    }
+
+    if (!targetId)
+    {
+        return;
+    }
+
+    if (KeyPressing.isKeyPressed(82 /*key: R*/) && Utils.isNotOpenChat())
+    {
+        strikerData.state = true;
+    }
+
+    if (!strikerData.state && strikerData.shellCache.length == strikerData.salvoRocketsCount)
+    {
+        if (!strikerData.shellsTimeout)
         {
-            setTimeout(() => { state = true; }, 2000);
+            strikerData.shellsTimeout = setTimeout(() => { strikerData.state = true; strikerData.shellsTimeout = null; }, 
+            strikerData.type == "striker" ? 2000 : 4000);
+        }
+    }
+
+    let targetBody = Utils.getBodyById(world, localPlayer, targetId);
+
+    if (!targetBody)
+    {
+        return;
+    }
+    
+    if (!targetBody.state)
+    {
+        return;
+    }
+
+    if (!targetBody.state.position)
+    {
+        return;
+    }
+
+    let target = Utils.getPlayerById(world, localPlayer, targetId);
+
+    if (!target)
+    {
+        return;
+    }
+
+    if (strikerData.state)
+    {
+        for (let i = 0; i < strikerData.shellCache.length; i++)
+        {
+            strikerData.shellCache.at(i).components_0.array.at(1).direction.x = 0;
+            strikerData.shellCache.at(i).components_0.array.at(1).direction.y = 0;
+            strikerData.shellCache.at(i).components_0.array.at(1).direction.z = 0;
+
+            strikerData.shellCache.at(i).components_0.array.at(1).position.x = targetBody.state.position.x;
+            strikerData.shellCache.at(i).components_0.array.at(1).position.y = targetBody.state.position.y;
+            strikerData.shellCache.at(i).components_0.array.at(1).position.z = targetBody.state.position.z;
         }
 
-        let targetPos = { x: 0, y: 0, z: 0 };
-
-        if (targetId)
+        if (strikerData.shellCache.length == 0)
         {
-            let bodies = world.physicsScene_0.bodies_0.array_hd7ov6$_0;
-
-            for (let i = 0; i < bodies.length; i++)
-            {
-                if (bodies.at(i).data.components_0.array.at(4).userId == targetId)
-                {
-                    if (bodies.at(i).state.position)
-                    {
-                        targetPos = bodies.at(i).state.position;
-                        break;
-                    }
-                }
-            }
+            strikerData.state = false;
         }
-
-        if (state)
+    }
+    else
+    {
+        for (let i = 0; i < strikerData.shellCache.length; i++)
         {
-            for (let i = 0; i < shellCache.length; i++)
-            {
-                shellCache.at(i).components_0.array.at(1).direction.x = 0;
-                shellCache.at(i).components_0.array.at(1).direction.y = 0;
-                shellCache.at(i).components_0.array.at(1).direction.z = 0;
-
-                if (targetPos)
-                {
-                    shellCache.at(i).components_0.array.at(1).position.x = targetPos.x;
-                    shellCache.at(i).components_0.array.at(1).position.y = targetPos.y;
-                    shellCache.at(i).components_0.array.at(1).position.z = targetPos.z;
-                }
-            }
-
-            if (shellCache.length == 0)
-            {
-                state = false;
-            }
-        }
-        else
-        {
-            for (let i = 0; i < shellCache.length; i++)
-            {
-                shellCache.at(i).components_0.array.at(1).direction.x = 0;
-                shellCache.at(i).components_0.array.at(1).direction.y = 0;
-                shellCache.at(i).components_0.array.at(1).direction.z = 0;
-            }
+            strikerData.shellCache.at(i).components_0.array.at(1).direction.x = 0;
+            strikerData.shellCache.at(i).components_0.array.at(1).direction.y = 0;
+            strikerData.shellCache.at(i).components_0.array.at(1).direction.z = 0;
         }
     }
 }

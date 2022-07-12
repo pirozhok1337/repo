@@ -1,5 +1,20 @@
 // gameObjects.c.js
 
+gameObjects = 
+{
+    localPlayer: null,
+    world: null,
+    gameActions: null,
+    mines: null,
+    flags: null,
+    physicsComponent: null,
+    healthComponent: null,
+    camera: null,
+    trackedChassis: null,
+    speedCharacteristics: null,
+    strikerComponent: null
+}
+
 GameObjects.getWorld = function ()
 {
     if (gameObjects.world)
@@ -7,14 +22,28 @@ GameObjects.getWorld = function ()
         return gameObjects.world;
     }  
 
-    let localPlayer = this.getLocalPlayer();
+    let rootObject = Utils.getRootObject();
 
-    if (!localPlayer)
+    if (!rootObject)
     {
-        return null;    
+        return null;
+    }  
+    
+    let subs = rootObject.store.subscribers.toArray();
+
+    if (!subs)
+    {
+        return null;
     }
 
-    return gameObjects.world = localPlayer.at(0).world;
+    let world = subs.find(element => element["tank"] != null && element["tank"].hasOwnProperty("world"));
+
+    if (!world)
+    {
+        return null;
+    }
+
+    return gameObjects.world = world.tank.world;
 }
 
 GameObjects.getGameActions = function ()
@@ -41,14 +70,56 @@ GameObjects.getMines = function ()
         return gameObjects.mines;
     }
 
-    let world = this.getWorld();
+    let localPlayer = this.getLocalPlayer();
 
-    if (!world)
+    if (!localPlayer)
+    {
+        return null;    
+    }
+    
+    let gameMode_0 = localPlayer.at(0).gameMode_0.components_0.array;
+
+    if (!gameMode_0)
     {
         return null;
-    }    
+    }
 
-    return gameObjects.mines = world.entities_0.array_hd7ov6$_0.at(0).components_0.array.at(15);
+    return gameObjects.mines = gameMode_0.at(15);
+}
+
+GameObjects.getFlags = function ()
+{
+    if (gameObjects.flags)
+    {
+        return gameObjects.flags;
+    }
+
+    let localPlayer = this.getLocalPlayer();
+
+    if (!localPlayer)
+    {
+        return null;    
+    }
+    
+    let gameMode_0 = localPlayer.at(0).gameMode_0.components_0.array;
+
+    if (!gameMode_0)
+    {
+        return null;
+    }
+
+    for (let i = 0; i < gameMode_0.length; i++)
+    {
+        if (gameMode_0.at(i).hasOwnProperty("flags_0"))
+        {
+            if (gameMode_0.at(i).flags_0.internalMap_uxhen5$_0)
+            {
+                return gameObjects.flags = gameMode_0.at(i).flags_0.internalMap_uxhen5$_0.backingMap_0;
+            }
+        }
+    }
+
+    return null;
 }
 
 GameObjects.getLocalPlayer = function ()
@@ -58,29 +129,24 @@ GameObjects.getLocalPlayer = function ()
         return gameObjects.localPlayer;
     }
 
-    let rootObject = Utils.getRootObject();
+    let world = this.getWorld();
 
-    if (!rootObject)
+    if (!world)
     {
-        console.log("!rootObject");
         return null;
-    }  
-    
-    let subs = rootObject.store.subscribers.array_hd7ov6$_0;
+    }
 
-    if (!subs)
+    let bodies = world.physicsScene_0.bodies_0.toArray();
+
+    for (let i = 0; i < bodies.length; i++)
     {
-        console.log("!subs");
-        return null;
-    }  
-    
-    for (let i = 0; i < subs.length; i++)
-    {
-        if (subs.at(i).hasOwnProperty("tank"))
+        if (bodies.at(i).data.isPossessed == true)
         {
-            return gameObjects.localPlayer = subs.at(i).tank.components_0.array;
+            return gameObjects.localPlayer = bodies.at(i).data.components_0.array;
         }
     }
+
+    gameObjects.world = null;
     
     return null;
 }
@@ -101,14 +167,15 @@ GameObjects.getPhysicsComponent = function ()
 
     for (let i = 0; i < localPlayer.length; i++)
     {
-        if (localPlayer.at(i).hasOwnProperty("tankPhysicsComponent_tczrao$_0"))
-            return gameObjects.physicsComponent = localPlayer.at(i).tankPhysicsComponent_tczrao$_0;
+        if (localPlayer.at(i).__proto__.hasOwnProperty("tankPhysicsComponent_0"))
+        {
+            return gameObjects.physicsComponent = localPlayer.at(i).tankPhysicsComponent_0;
+        }
     }
 
     return null;
 }
 
-// ПЕРЕДЕЛАТЬ
 GameObjects.getHealthComponent = function ()
 {
     if (gameObjects.healthComponent)
@@ -123,7 +190,15 @@ GameObjects.getHealthComponent = function ()
         return null;    
     }
 
-    return gameObjects.healthComponent = localPlayer.at(1);
+    for (let i = 0; i < localPlayer.length; i++)
+    {
+        if (localPlayer.at(i).__proto__.hasOwnProperty("health"))
+        {
+            return gameObjects.healthComponent = localPlayer.at(i);
+        }
+    }
+
+    return null;
 }
 
 GameObjects.getCamera = function ()
@@ -142,8 +217,61 @@ GameObjects.getCamera = function ()
 
     for (let i = 0; i < localPlayer.length; i++)
     {
-        if (localPlayer.at(i).hasOwnProperty("followCamera_w8ai3w$_0"))
+        if (localPlayer.at(i).__proto__.hasOwnProperty("followCamera_0"))
+        {
             return gameObjects.camera = localPlayer.at(i).followCamera_0.currState_0;
+        }
+    }
+
+    return null; 
+}
+
+GameObjects.getTrackedChassis = function ()
+{
+    if (gameObjects.trackedChassis)
+    {
+        return gameObjects.trackedChassis;
+    }
+
+    let localPlayer = this.getLocalPlayer();
+
+    if (!localPlayer)
+    {
+        return null;    
+    }
+
+    for (let i = 0; i < localPlayer.length; i++)
+    {
+        if (localPlayer.at(i).__proto__.hasOwnProperty("trackedChassis_0"))
+        {
+            return gameObjects.trackedChassis = localPlayer.at(i).trackedChassis_0.params_0;
+        }
+    }
+
+    return null; 
+}
+
+GameObjects.getSpeedCharacteristics = function ()
+{
+    if (gameObjects.speedCharacteristics)
+    {
+        return gameObjects.speedCharacteristics;
+    }
+
+    let localPlayer = this.getLocalPlayer();
+
+    if (!localPlayer)
+    {
+        return null;    
+    }
+
+    for (let i = 0; i < localPlayer.length; i++)
+    {
+        if (localPlayer.at(i).__proto__.hasOwnProperty("speedCharacteristics_0") &&
+        localPlayer.at(i).__proto__.hasOwnProperty("maxSpeedSmoother_0"))
+        {
+            return gameObjects.speedCharacteristics = localPlayer.at(i);
+        }
     }
 
     return null; 
@@ -165,8 +293,16 @@ GameObjects.getStrikerComponent = function ()
 
     for (let i = 0; i < localPlayer.length; i++)
     {
-        if (localPlayer.at(i).hasOwnProperty("strikerWeapon_jjsiik$_0"))
-            return gameObjects.strikerComponent = localPlayer.at(i).strikerWeapon_jjsiik$_0;
+        if (localPlayer.at(i).__proto__.hasOwnProperty("strikerWeapon_0"))
+        {
+            strikerData.type = "striker";
+            return gameObjects.strikerComponent = localPlayer.at(i).strikerWeapon_0;
+        }
+        else if (localPlayer.at(i).hasOwnProperty("scorpioData_7x2wz0$_0"))
+        {
+            strikerData.type = "scorpion";
+            return gameObjects.strikerComponent = localPlayer.at(i);
+        }
     }
 
     return null;

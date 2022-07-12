@@ -7,6 +7,11 @@ Utils.getRootElement = function ()
         return utilsObjects.rootElement;
     }
 
+    if (!document.getElementById("root"))
+    {
+        return null;
+    }
+
     return utilsObjects.rootElement = document.getElementById("root")._reactRootContainer;
 }
 
@@ -14,15 +19,24 @@ Utils.getRootObject = function ()
 {
     if (utilsObjects.rootObject)
     {
+        utilsObjects.rootObject.store.state.shop.enabled = true;
+
         return utilsObjects.rootObject;
     }
 
-    if (!this.getRootElement().hasOwnProperty("_internalRoot"))
+    let rootElement = Utils.getRootElement();
+
+    if (!rootElement)
     {
         return null;
     }
 
-    return utilsObjects.rootObject = this.getRootElement()._internalRoot.current.memoizedState.
+    if (!rootElement.hasOwnProperty("_internalRoot"))
+    {
+        return null;
+    }
+
+    return utilsObjects.rootObject = rootElement._internalRoot.current.memoizedState.
         element.type.prototype;
 }
 
@@ -41,23 +55,8 @@ Utils.isNotOpenChat = function ()
     return (document.getElementsByClassName("sc-bwzfXH iokmvL").item(0) == null);
 }
 
-Utils.isParkourMode = function ()
-{
-    let rootObject = this.getRootObject();
-
-    if (!rootObject)
-        return false;
-
-    return rootObject.store.state.battleStatistics.isParkourMode;
-}
-
 Utils.isNotKillZone = function (world, position)
 {
-    if (!this.isParkourMode())
-    {
-        return true;
-    }
-
     if (!world)
         return false;
 
@@ -73,29 +72,262 @@ Utils.isNotKillZone = function (world, position)
         return false;
 
     return true;
-
-    if (position.z != 0 && (position.z >= bounds.maxZ || position.z <= bounds.minZ))
-        return false;
-
-    return true;
 }
 
 Utils.isGameReady = function ()
 {
-    let renderElement = this.getRenderElement();
-
-    if (!renderElement)
-        return false;
-
-    let rootObject = this.getRootObject();
+    let rootObject = Utils.getRootObject();
 
     if (!rootObject)
+    {
         return false;
+    } 
 
-    return rootObject.store.state.battleStatistics.battleLoaded;
+    if (!rootObject.store.state.battleStatistics.battleLoaded)
+    {
+        return false;
+    }
+
+    let localPlayer = GameObjects.getLocalPlayer();
+
+    if (!localPlayer)
+    {
+        return false;
+    }
+
+    if (localPlayer.length == 0)
+    {
+        return false;
+    }
+
+    return true;
 }
 
-Utils.errorLog = function (text)
+Utils.isPlayerEnemy = function(localPlayer, player)
 {
-    console.log("[SHIZOVAL] " + text);
+    if (!player || !localPlayer)
+    {
+        return null;
+    }
+
+    if (!player.at(0))
+    {
+        return null;
+    }
+
+    let team = player.at(0).team;
+
+    if (!team)
+    {
+        return null;
+    }
+
+    let name$ = team.name$;
+
+    if (!name$)
+    {
+        return null;
+    }
+
+    if (localPlayer.at(0).team.name$ != "NONE" && localPlayer.at(0).team.name$ == name$)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+Utils.getPlayers = function(world, localPlayer, isOnlyEnemy = false)
+{
+    if (!world || !localPlayer)
+    {
+        return null;
+    }
+
+    let bodies = world.physicsScene_0.bodies_0.toArray();
+
+    if (!bodies)
+    {
+        return null;
+    }
+
+    let playersArray = [];
+
+    for (let i = 0; i < bodies.length; i++)
+    {
+        if (!bodies.at(i))
+        {
+            continue;
+        }
+
+        let data = bodies.at(i).data;
+
+        if (!data)
+        {
+            continue;
+        }
+
+        let components_0 = data.components_0;
+
+        if (!components_0)
+        {
+            continue;
+        }
+
+        components_0 = components_0.array;
+
+        if (!components_0)
+        {
+            continue;
+        }
+
+        if (components_0.length == 0)
+        {
+            continue;
+        }
+
+        if (isOnlyEnemy)
+        {
+            if (Utils.isPlayerEnemy(localPlayer, components_0) == false)
+            {
+                continue;
+            }
+        }
+
+        if (localPlayer != components_0)
+        {
+            playersArray.push(components_0);
+        }
+    }
+
+    return playersArray;
+}
+
+Utils.getPlayerById = function(world, localPlayer, playerId)
+{
+    if (!world || !localPlayer || !playerId)
+    {
+        return null;
+    }
+
+    let playersArray = Utils.getPlayers(world, localPlayer);
+
+    if (!playersArray)
+    {
+        return null;
+    }
+
+    if (playersArray.length == 0)
+    {
+        return null;
+    }
+
+    for (let i = 0; i < playersArray.length; i++)
+    {
+        for (let n = 0; n < playersArray.at(i).length; n++)
+        {
+            if (playersArray.at(i).at(n).__proto__.hasOwnProperty("userId"))
+            {
+                if (playerId == playersArray.at(i).at(n).userId)
+                {
+                    return playersArray.at(i);
+                }
+            }
+        }
+    }
+
+    return null;
+}
+
+Utils.getPlayerName = function(player)
+{
+    if (!player)
+    {
+        return null;
+    }
+    
+    if (player.length == 0)
+    {
+        return null;
+    }
+
+    let configuration_0;
+
+    for (let i = 0; i < player.length; i++)
+    {
+        if (player.at(i).hasOwnProperty("configuration_0"))
+        {
+            configuration_0 = player.at(i).configuration_0;
+            break;
+        }
+    }
+
+    if (!configuration_0)
+    {
+        return null;
+    }
+
+    if (!configuration_0.userName)
+    {
+        return null;
+    }
+
+    return configuration_0.userName;
+}
+
+Utils.getBodyById = function(world, localPlayer, playerId)
+{
+    if (!world || !localPlayer || !playerId)
+    {
+        return null;
+    }
+
+    let player = Utils.getPlayerById(world, localPlayer, playerId);
+
+    if (!player)
+    {
+        return null;
+    }
+
+    for (let i = 0; i < player.length; i++)
+    {
+        if (player.at(i).__proto__.hasOwnProperty("tankBody_0"))
+        {
+            tankBody_0 = player.at(i).tankBody_0;
+
+            if (!tankBody_0)
+            {
+                return null;
+            }
+
+            return tankBody_0;
+        }
+    }
+
+    return null;
+}
+
+Utils.getPlayerBody = function(player)
+{
+    if (!player)
+    {
+        return null;
+    }
+
+    for (let i = 0; i < player.length; i++)
+    {
+        if (player.at(i).__proto__.hasOwnProperty("tankBody_0"))
+        {
+            tankBody_0 = player.at(i).tankBody_0;
+
+            if (!tankBody_0)
+            {
+                return null;
+            }
+
+            return tankBody_0;
+        }
+    }
+
+    return null;
 }

@@ -1,25 +1,32 @@
 // clicker.c.js
 
-let autoMining = false
-
-document.addEventListener('keyup', (e) => 
+clickerData = 
 {
-    if (e.keyCode == 53 && Utils.isGameReady() && Utils.isNotOpenChat())
+    autoMining: new ImGui_Var(false),
+    autoSupplies: new ImGui_Var(false),
+
+    autoHealingData:
     {
-        autoMining = !autoMining;
+        state: new ImGui_Var(false),
+        mply: new ImGui_Var(0.01),
+        counter: 0,
+
+        supplyData:
+        {
+            firstAID: null,
+            mine: null
+        }
     }
-})
+};
 
 Clicker.process = function (localPlayer)
 {
-    if (!localPlayer)
+    if (KeyPressing.isKeyPressed(pingKey) && Utils.isNotOpenChat())
     {
         return;
     }
 
-    let world = GameObjects.getWorld();
-
-    if (!world)
+    if (!localPlayer)
     {
         return;
     }
@@ -30,40 +37,77 @@ Clicker.process = function (localPlayer)
     {
         return;
     }
-    
-    let healthComponent = GameObjects.getHealthComponent();
 
-    if (!healthComponent)
+    if (!clickerData.autoHealingData.supplyData.firstAID || !clickerData.autoHealingData.supplyData.mine)
+    {
+        for (let i = 0; i < localPlayer.length; i++)
+        {
+            if (localPlayer.at(i).hasOwnProperty("supplyTypeConfigs_0"))
+            {
+                let map = localPlayer.at(i).supplyTypeConfigs_0.map_97q5dv$_0.
+                    internalMap_uxhen5$_0.backingMap_0;
+
+                for (let key in map)
+                {
+                    if (map[key].key_5xhq3d$_0.name$ == "FIRST_AID")
+                    {
+                        clickerData.autoHealingData.supplyData.firstAID = map[key]._value_0._value_0;
+                    }
+
+                    if (map[key].key_5xhq3d$_0.name$ == "MINE")
+                    {
+                        clickerData.autoHealingData.supplyData.mine = map[key]._value_0._value_0;
+                    }
+                }
+
+                break;
+            }
+        }
+    }
+
+    if (clickerData.autoSupplies.value)
+    {
+        gameActions.at(6).at(1).wasPressed = true;
+        gameActions.at(6).at(1).wasReleased = true;
+    
+        gameActions.at(7).at(1).wasPressed = true;
+        gameActions.at(7).at(1).wasReleased = true;
+    
+        gameActions.at(8).at(1).wasPressed = true;
+        gameActions.at(8).at(1).wasReleased = true;
+    }
+
+    if (clickerData.autoMining.value)
+    {
+        gameActions.at(9).at(1).wasPressed = true;
+        gameActions.at(9).at(1).wasReleased = true;
+    }
+
+    if (!clickerData.autoHealingData.state.value)
     {
         return;
     }
 
-    if (Utils.isParkourMode() && !healthComponent.isFullHealth() && healthComponent.alive)
+    if (clickerData.autoHealingData.mply.value < 1)
     {
-        gameActions.at(5).at(1).wasPressed = true;
-        gameActions.at(5).at(1).wasReleased = true;
-        gameActions.at(9).at(1).wasPressed = true;
-        gameActions.at(9).at(1).wasReleased = true;
-    
-        world.frameStartTime_0 += 5000000;
-    
-        world.inputManager.input.processActions_0();
-    
-        world.frameStartTime_0 -= 5000000;
-    }
-
-    gameActions.at(6).at(1).wasPressed = true;
-    gameActions.at(6).at(1).wasReleased = true;
-
-    gameActions.at(7).at(1).wasPressed = true;
-    gameActions.at(7).at(1).wasReleased = true;
-
-    gameActions.at(8).at(1).wasPressed = true;
-    gameActions.at(8).at(1).wasReleased = true;
-
-    if (autoMining)
+        if (clickerData.autoHealingData.counter >= parseFloat((clickerData.autoHealingData.mply.value * 10).toFixed(2)))
+        {
+            clickerData.autoHealingData.counter = 0;
+            
+            clickerData.autoHealingData.supplyData.firstAID.onUserActivatedSupply();
+            clickerData.autoHealingData.supplyData.mine.onUserActivatedSupply();
+        }
+        else
+        {
+            clickerData.autoHealingData.counter++;
+        }
+    } 
+    else
     {
-        gameActions.at(9).at(1).wasPressed = true;
-        gameActions.at(9).at(1).wasReleased = true;
+        for (let i = 0; i < clickerData.autoHealingData.mply.value; i++)
+        {
+            clickerData.autoHealingData.supplyData.firstAID.onUserActivatedSupply();
+            clickerData.autoHealingData.supplyData.mine.onUserActivatedSupply();
+        }
     }
 }

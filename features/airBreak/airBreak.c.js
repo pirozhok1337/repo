@@ -1,5 +1,12 @@
 // airBreak.c.js
 
+let startSpeed = 
+{
+    forward: 0,
+    right: 0,
+    up: 0
+};
+
 document.addEventListener('keyup', (e) => 
 {
     if (e.keyCode == 16 && e.location == 2 && Utils.isGameReady() && Utils.isNotOpenChat())
@@ -8,16 +15,13 @@ document.addEventListener('keyup', (e) =>
     }
 })
 
-document.addEventListener('keyup', (e) => 
-{
-    if (e.keyCode == 74 && Utils.isGameReady() && Utils.isNotOpenChat())
-    {
-        airBreak.antiAim = !airBreak.antiAim;
-    }
-})
-
 AirBreak.process = function (localPlayer)
 {
+    if (!airBreak.enabled.value)
+    {
+        return;
+    }
+
     if (!localPlayer)
     {
         return;
@@ -37,6 +41,8 @@ AirBreak.process = function (localPlayer)
         return;
     }
 
+    let trackedChassis = GameObjects.getTrackedChassis();
+
     let camera = GameObjects.getCamera();
 
     if (!camera)
@@ -51,21 +57,31 @@ AirBreak.process = function (localPlayer)
         return;
     }
 
+    if (!airBreak.state.value && trackedChassis)
+    {
+        trackedChassis.maxRayLength = 50;
+        trackedChassis.dampingCoeff = 2000;
+        trackedChassis.springCoeff = 16000;
+    }
+
     if (airBreak.isShiftPressed)
     {
         airBreak.isShiftPressed = false;
 
         airBreak.state = !airBreak.state;
 
+        startSpeed = 
+        {
+            forward: 0,
+            right: 0,
+            up: 0
+        };
+
         if (airBreak.state)
         {
             airBreak.position.x = physicsComponent.body.state.position.x;
             airBreak.position.y = physicsComponent.body.state.position.y;
             airBreak.position.z = physicsComponent.body.state.position.z;
-
-            airBreak.velocity.x = 0;
-            airBreak.velocity.y = 0;
-            airBreak.velocity.z = 0;
         }
         else
         {
@@ -79,150 +95,268 @@ AirBreak.process = function (localPlayer)
         
             for (let i = 0; i < bodies.length; i++) 
             {
+                bodies.at(i).state.velocity.x = 0;
+                bodies.at(i).state.velocity.y = 0;
+                bodies.at(i).state.velocity.z = 0;
+
+                bodies.at(i).state.angularVelocity.x = 0;
+                bodies.at(i).state.angularVelocity.y = 0;
+                bodies.at(i).state.angularVelocity.z = 0;
+
                 bodies.at(i).movable = true;
             }
         }
     }
 
     if (!airBreak.state)
+    {
         return;
+    }
 
+    let dt = world.physicsScene_0.dt * 2;
     let direction = camera.direction;
 
-    airBreak.velocity.x = 0;
-    airBreak.velocity.y = 0;
-
-    if (KeyPressing.isKeyPressed(87 /*key: W*/) && Utils.isNotOpenChat())
+    if (!airBreak.airWalk.value)
     {
-        let position = 
+        if (KeyPressing.isKeyPressed(87 /*key: W*/) && Utils.isNotOpenChat())
         {
-            x: airBreak.position.x + airBreak.speed * Math.sin(-direction),
-            y: airBreak.position.y + airBreak.speed * Math.cos(-direction),
-            z: 0
-        };
+            startSpeed.forward += (airBreak.speed.value - startSpeed.forward) * dt;
 
-        if (Utils.isNotKillZone(world, position))
+            let position = 
+            {
+                x: airBreak.position.x + startSpeed.forward * Math.sin(-direction),
+                y: airBreak.position.y + startSpeed.forward * Math.cos(-direction),
+                z: 0
+            };
+
+            if (Utils.isNotKillZone(world, position))
+            {
+                airBreak.position.x = position.x;
+                airBreak.position.y = position.y;
+            }
+        }
+        else
         {
-            airBreak.position.x = position.x;
-            airBreak.position.y = position.y;
+            if (startSpeed.forward > 0)
+            {
+                startSpeed.forward += (0 - startSpeed.forward) * (dt * 1.3);
 
-            airBreak.velocity.x += physicsComponent.body.maxSpeedXY * Math.sin(-direction);
-            airBreak.velocity.y += physicsComponent.body.maxSpeedXY * Math.cos(-direction);
+                let position = 
+                {
+                    x: airBreak.position.x + startSpeed.forward * Math.sin(-direction),
+                    y: airBreak.position.y + startSpeed.forward * Math.cos(-direction),
+                    z: 0
+                };
+    
+                if (Utils.isNotKillZone(world, position))
+                {
+                    airBreak.position.x = position.x;
+                    airBreak.position.y = position.y;
+                }
+            }
+        }
+        
+
+        if (KeyPressing.isKeyPressed(83 /*key: S*/) && Utils.isNotOpenChat())
+        {
+            startSpeed.forward -= (airBreak.speed.value - (-startSpeed.forward)) * dt;
+
+            let position = 
+            {
+                x: airBreak.position.x + startSpeed.forward * Math.sin(-direction),
+                y: airBreak.position.y + startSpeed.forward * Math.cos(-direction),
+                z: 0
+            };
+
+            if (Utils.isNotKillZone(world, position))
+            {
+                airBreak.position.x = position.x;
+                airBreak.position.y = position.y;
+            }
+        }
+        else
+        {
+            if (startSpeed.forward < 0)
+            {
+                startSpeed.forward -= (0 - (-startSpeed.forward)) * (dt * 1.3);
+
+                let position = 
+                {
+                    x: airBreak.position.x + startSpeed.forward * Math.sin(-direction),
+                    y: airBreak.position.y + startSpeed.forward * Math.cos(-direction),
+                    z: 0
+                };
+    
+                if (Utils.isNotKillZone(world, position))
+                {
+                    airBreak.position.x = position.x;
+                    airBreak.position.y = position.y;
+                }
+            }
+        }
+
+        if (KeyPressing.isKeyPressed(65 /*key: A*/) && Utils.isNotOpenChat())
+        {
+            startSpeed.right -= (airBreak.speed.value - (-startSpeed.right)) * dt;
+
+            let position = 
+            {
+                x: airBreak.position.x + startSpeed.right * Math.sin(-(direction - Math.PI / 2)),
+                y: airBreak.position.y + startSpeed.right * Math.cos(-(direction - Math.PI / 2)),
+                z: 0
+            };
+
+            if (Utils.isNotKillZone(world, position))
+            {
+                airBreak.position.x = position.x;
+                airBreak.position.y = position.y;
+            }
+        }
+        else
+        {
+            if (startSpeed.right < 0)
+            {
+                startSpeed.right -= (0 - (-startSpeed.right)) * (dt * 1.3);
+
+                let position = 
+                {
+                    x: airBreak.position.x + startSpeed.right * Math.sin(-(direction - Math.PI / 2)),
+                    y: airBreak.position.y + startSpeed.right * Math.cos(-(direction - Math.PI / 2)),
+                    z: 0
+                };
+    
+                if (Utils.isNotKillZone(world, position))
+                {
+                    airBreak.position.x = position.x;
+                    airBreak.position.y = position.y;
+                }
+            }
+        }
+
+        if (KeyPressing.isKeyPressed(68 /*key: D*/) && Utils.isNotOpenChat())
+        {
+            startSpeed.right += (airBreak.speed.value - startSpeed.right) * dt;
+
+            let position = 
+            {
+                x: airBreak.position.x + startSpeed.right * Math.sin(-(direction - Math.PI / 2)),
+                y: airBreak.position.y + startSpeed.right * Math.cos(-(direction - Math.PI / 2)),
+                z: 0
+            };
+
+            if (Utils.isNotKillZone(world, position))
+            {
+                airBreak.position.x = position.x;
+                airBreak.position.y = position.y;
+            }
+        }
+        else
+        {
+            if (startSpeed.right > 0)
+            {
+                startSpeed.right += (0 - startSpeed.right) * (dt * 1.3);
+
+                let position = 
+                {
+                    x: airBreak.position.x + startSpeed.right * Math.sin(-(direction - Math.PI / 2)),
+                    y: airBreak.position.y + startSpeed.right * Math.cos(-(direction - Math.PI / 2)),
+                    z: 0
+                };
+    
+                if (Utils.isNotKillZone(world, position))
+                {
+                    airBreak.position.x = position.x;
+                    airBreak.position.y = position.y;
+                }
+            }
         }
     }
-
-    if (KeyPressing.isKeyPressed(83 /*key: S*/) && Utils.isNotOpenChat())
-    {
-        let position = 
-        {
-            x: airBreak.position.x - airBreak.speed * Math.sin(-direction),
-            y: airBreak.position.y - airBreak.speed * Math.cos(-direction),
-            z: 0
-        };
-
-        if (Utils.isNotKillZone(world, position))
-        {
-            airBreak.position.x = position.x;
-            airBreak.position.y = position.y;
-
-            airBreak.velocity.x -= physicsComponent.body.maxSpeedXY * Math.sin(-direction);
-            airBreak.velocity.y -= physicsComponent.body.maxSpeedXY * Math.cos(-direction);
-        }
-    }
-
-    if (KeyPressing.isKeyPressed(65 /*key: A*/) && Utils.isNotOpenChat())
-    {
-        let position = 
-        {
-            x: airBreak.position.x - airBreak.speed * Math.sin(-(direction - Math.PI / 2)),
-            y: airBreak.position.y - airBreak.speed * Math.cos(-(direction - Math.PI / 2)),
-            z: 0
-        };
-
-        if (Utils.isNotKillZone(world, position))
-        {
-            airBreak.position.x = position.x;
-            airBreak.position.y = position.y;
-
-            airBreak.velocity.x -= physicsComponent.body.maxSpeedXY * Math.sin(-(direction - Math.PI / 2));
-            airBreak.velocity.y -= physicsComponent.body.maxSpeedXY * Math.cos(-(direction - Math.PI / 2));
-        }
-    }
-
-    if (KeyPressing.isKeyPressed(68 /*key: D*/) && Utils.isNotOpenChat())
-    {
-        let position = 
-        {
-            x: airBreak.position.x + airBreak.speed * Math.sin(-(direction - Math.PI / 2)),
-            y: airBreak.position.y + airBreak.speed * Math.cos(-(direction - Math.PI / 2)),
-            z: 0
-        };
-
-        if (Utils.isNotKillZone(world, position))
-        {
-            airBreak.position.x = position.x;
-            airBreak.position.y = position.y;
-
-            airBreak.velocity.x += physicsComponent.body.maxSpeedXY * Math.sin(-(direction - Math.PI / 2));
-            airBreak.velocity.y += physicsComponent.body.maxSpeedXY * Math.cos(-(direction - Math.PI / 2));
-        }
-    }
+    
 
     if (KeyPressing.isKeyPressed(81 /*key: Q*/) && Utils.isNotOpenChat())
     {
-        airBreak.position.z += airBreak.speed;
+        startSpeed.up += (airBreak.speed.value - startSpeed.up) * dt;
+
+        airBreak.position.z += startSpeed.up;
+    }
+    else
+    {
+        if (startSpeed.up > 0)
+        {
+            startSpeed.up += (0 - startSpeed.up) * (dt * 1.3);
+            airBreak.position.z += startSpeed.up;
+        }
     }
 
     if (KeyPressing.isKeyPressed(69 /*key: E*/) && Utils.isNotOpenChat())
     {
-        airBreak.position.z -= airBreak.speed;
-    }
+        startSpeed.up -= (airBreak.speed.value - (-startSpeed.up)) * dt;
 
-    if (KeyPressing.isKeyPressed(37 /*key: LEFT*/) && Utils.isNotOpenChat())
+        airBreak.position.z += startSpeed.up;
+    }
+    else
     {
-        if (airBreak.speed > 1)
-            airBreak.speed -= 1;
+        if (startSpeed.up < 0)
+        {
+            startSpeed.up -= (0 - (-startSpeed.up)) * (dt * 1.3);
+            airBreak.position.z += startSpeed.up;
+        }
     }
 
-    if (KeyPressing.isKeyPressed(39 /*key: RIGHT*/) && Utils.isNotOpenChat())
-    {
-        airBreak.speed += 1;
-    }
-
-    if (Utils.isParkourMode())
+    if (!airBreak.airWalk.value)
     {
         for (let i = 0; i < bodies.length; i++) 
-        {
+        {   
+            bodies.at(i).state.velocity.x = 0;
+            bodies.at(i).state.velocity.y = 0;
+            bodies.at(i).state.velocity.z = 0;
+    
+            bodies.at(i).state.angularVelocity.x = 0;
+            bodies.at(i).state.angularVelocity.y = 0;
+            bodies.at(i).state.angularVelocity.z = 0;
+    
             bodies.at(i).movable = false;
-        }
-
-        if (airBreak.antiAim)
-        {
-            let bounds = world.entities_0.array_hd7ov6$_0.at(0).components_0.array.at(0).bounds;
-
-            physicsComponent.interpolatedPosition.x = Utils.getRandomArbitrary(bounds.minX, bounds.maxX);
-            physicsComponent.interpolatedPosition.y = Utils.getRandomArbitrary(bounds.minY, bounds.maxY);
-            physicsComponent.interpolatedPosition.z = Utils.getRandomArbitrary(bounds.maxZ + 500, bounds.maxZ + 500);
         }
 
         physicsComponent.body.state.position.x = airBreak.position.x;
         physicsComponent.body.state.position.y = airBreak.position.y;
+
+        physicsComponent.body.state.velocity.x = 0;
+        physicsComponent.body.state.velocity.y = 0;
+        physicsComponent.body.state.angularVelocity.z = 0;
+
+        if (syncData.deSyncData.state.value && syncData.deSyncData.teleportToRealPosition.value)
+        {
+            physicsComponent.body.state.orientation.w = syncData.deSyncData.orientation.w;
+            physicsComponent.body.state.orientation.z = syncData.deSyncData.orientation.z;
+        }
+        else
+        {
+            physicsComponent.body.state.orientation.w = Math.sin(-(camera.direction - Math.PI) / 2);
+            physicsComponent.body.state.orientation.z = Math.cos(-(camera.direction - Math.PI) / 2);
+        }
     }
     else
     {
-        physicsComponent.body.state.velocity.x = airBreak.velocity.x;
-        physicsComponent.body.state.velocity.y = airBreak.velocity.y;
+        for (let i = 0; i < bodies.length; i++) 
+        {
+            bodies.at(i).movable = true;
+        }
+
+        if (trackedChassis)
+        {
+            trackedChassis.maxRayLength = 1e+100;
+            trackedChassis.dampingCoeff = 0;
+            trackedChassis.springCoeff = 0;
+        }
     }
-
+    
     physicsComponent.body.state.position.z = airBreak.position.z;
-    physicsComponent.body.state.velocity.z = airBreak.velocity.z;
-
-    physicsComponent.body.state.orientation.w = Math.sin(-(camera.direction - Math.PI) / 2);
-    physicsComponent.body.state.orientation.z = Math.cos(-(camera.direction - Math.PI) / 2);
-    physicsComponent.body.state.orientation.x = 0;
-    physicsComponent.body.state.orientation.y = 0;
 
     physicsComponent.body.state.angularVelocity.x = 0;
     physicsComponent.body.state.angularVelocity.y = 0;
-    physicsComponent.body.state.angularVelocity.z = 0;
+    physicsComponent.body.state.velocity.z = 0;
+
+    physicsComponent.body.state.orientation.x = 0;
+    physicsComponent.body.state.orientation.y = 0;
 }

@@ -2,16 +2,18 @@
 
 // Data
 let init = false;
-
-CheatMenu.init();
+let frameCounter = 0;
+let pingKey = 74; /* key: J */
 
 function reset()
 {
-    init = false;
-    airBreak.state = false;
+    init = airBreak.state = stickData.state.value = syncData.state.value = menuShow = false;
+    flagTeleportData.cooldown = true;
 
-    document.getElementById("infoWindow").style.display = "";
-    document.getElementById("gameStates").style.display = "none";
+    let canvas = document.getElementById("canvas__imgui");
+    canvas.style.visibility = "hidden";
+
+    stickData.target = null;
 
     gameObjects = 
     {
@@ -22,73 +24,83 @@ function reset()
         physicsComponent: null,
         healthComponent: null,
         camera: null,
+        trackedChassis: null,
+        speedCharacteristics: null,
         strikerComponent: null
-    };
+    }
 
-    utilsObjects = 
+    clickerData.autoHealingData.supplyData = 
     {
-        rootElement: null,
-        rootObject: null
+        firstAID: null,
+        mine: null
     };
 }
 
-// Main event (call after initialization)
-function mainEvent()
+function mainEvent(time)
 {
-    try
+    if (!init && Utils.isGameReady())
     {
-        if (!init && Utils.isGameReady())
+        let localPlayer = GameObjects.getLocalPlayer();
+
+        if (localPlayer)
         {
             init = true;
-    
-            // init code
-            document.getElementById("infoWindow").style.display = "none";
-            document.getElementById("gameStates").style.display = "";
 
-            let localPlayer = GameObjects.getLocalPlayer();
-                
+            Sync.init(localPlayer);
             Striker.init(localPlayer);
-
-            localPlayer.at(0).entity.unpossess = function () 
-            {
-                this.isPossessed = !1;
-                reset();
-            }
+            NoKnockback.init(localPlayer);
         }
-        else if (init && !Utils.isGameReady())
-        {
-            reset();
-        }
-    
-        if (init)
-        {
-            let localPlayer = GameObjects.getLocalPlayer();
+    }
+    else if (init && !Utils.isGameReady())
+    {
+        reset();
+    }
 
-            if (localPlayer)
-            {
-                localPlayer.at(37).needImmediateUpdate_0 = true;
-            }
+    if (init)
+    {
+        let localPlayer = GameObjects.getLocalPlayer();
 
-            // process functions
-            AirBreak.process(localPlayer);
-            Clicker.process(localPlayer); 
+        Stick.process(localPlayer);
+        AirBreak.process(localPlayer);
+        BoxTeleport.process(localPlayer);
+        FlagTeleport.process(localPlayer);
+        Clicker.process(localPlayer);
+        Other.process(localPlayer);
+
+        frameCounter++;
+
+        if (frameCounter >= 2)
+        {
             Striker.process(localPlayer);
             RemoveMines.process(localPlayer);
             WallHack.process(localPlayer);
-
-            CheatMenu.setStates();
+            
+            frameCounter = 0;
         }
-    }   
-    catch (e)
-    {
-        Utils.errorLog(e);
-        reset();
+
+        try
+        {
+            CheatMenu.draw(time);
+        }
+        catch (e)
+        {
+            console.log(`et ppc: ${e}`);
+        }
     }
 
     requestAnimationFrame(mainEvent);
 }
 
-requestAnimationFrame(mainEvent);
-
-console.clear();
-console.log("[SHIZOVAL] The cheat has been loaded");
+if (GM_info.script.version != 0.5)
+{
+    alert(`У вас установлена устаревшая версия скрипта!\n
+You have an outdated version of the script installed!`);
+    window.open("https://github.com/sheezzmee/shizoval/blob/main/README.md", '_blank').focus();
+}
+else
+{
+    requestAnimationFrame(mainEvent);
+    
+    alert(`Используйте только на тестовом сервере и только в режиме паркур!\n
+Use only on the test server and only in parkour mode!`);
+}

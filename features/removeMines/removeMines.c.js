@@ -1,15 +1,15 @@
 // removeMines.c.js
 
+let removeMines = new ImGui_Var(true);
+
 RemoveMines.process = function (localPlayer)
 {
-    if (!localPlayer)
+    if (!removeMines.value)
     {
         return;
     }
 
-    let world = GameObjects.getWorld();
-
-    if (!world)
+    if (!localPlayer)
     {
         return;
     }
@@ -27,5 +27,4 @@ RemoveMines.process = function (localPlayer)
         var o = n.next();
         mines.removeAllMines_0(o)
     }
-
 }

@@ -1,82 +1,106 @@
 // cheatMenu.c.js
 
-let airBreakObj;
-let clickerObj;
+document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock || document.webkitExitPointerLock;
 
-CheatMenu.init = function ()
-{   
-    $("body").append(cheatMenuCode);
+let menuShow = false;
 
-    airBreakObj = 
-    {
-        airBreakState:
-        {
-            color: document.getElementById("airBreakStateColor"),
-            label: document.getElementById("airBreakState")
-        },
+(async function()
+{ 
+    await ImGui.default();
 
-        airBreakSpeed:
-        {
-            label: document.getElementById("airBreakSpeed")
-        },
+    ImGui.CreateContext();
+    ImGui.StyleColorsDark();
 
-        antiAimState:
-        {
-            color: document.getElementById("antiAimStateColor"),
-            label: document.getElementById("antiAimState")
-        }
-    };
+    const output = document.getElementById("output") || document.body;
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("webgl2", { alpha: true }) || canvas.getContext("webgl", { alpha: true });
 
-    clickerObj = 
-    {
-        autoMining:
-        {
-            color: document.getElementById("autoMiningStateColor"),
-            label: document.getElementById("autoMiningState")
-        }
-    };
-}
+    output.appendChild(canvas);
 
-CheatMenu.setStates = function ()
+    canvas.tabIndex = 1000;
+    canvas.id = "canvas__imgui";
+
+    canvas.style.position = "absolute";
+    canvas.style.left = "0px";
+    canvas.style.right = "0px";
+    canvas.style.top = "0px";
+    canvas.style.bottom = "0px";
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.style.userSelect = "none";
+    canvas.style.visibility = "hidden";
+
+    ImGui_Impl.Init(canvas);
+    ImGui_Impl.gl = context;
+})();
+
+document.addEventListener('keyup', (e) => 
 {
-    if (airBreakObj.airBreakState.label.textContent == "FALSE" && airBreak.state == true)
+    if (e.keyCode == 45 && Utils.isGameReady() && Utils.isNotOpenChat())
     {
-        airBreakObj.airBreakState.label.textContent = "TRUE";
-        airBreakObj.airBreakState.color.color = "green";
+        menuShow = !menuShow;
+
+        let canvas = document.getElementById("canvas__imgui");
+
+        menuShow ? canvas.style.visibility = "" : canvas.style.visibility = "hidden";
+
+        if (menuShow)
+        {
+            document.exitPointerLock();
+        }
+    }
+})
+
+CheatMenu.draw = function (time)
+{
+    if (!menuShow)
+    {
+        return;
     }
 
-    if (airBreakObj.airBreakState.label.textContent == "TRUE" && airBreak.state == false)
+    ImGui_Impl.NewFrame(time);
+    ImGui.NewFrame();
+    
+    ImGui.SetNextWindowSize(new ImGui.ImVec2(650, 370), ImGui.Cond.FirstUseEver);
+    ImGui.Begin("shizoval", null, ImGui.WindowFlags.NoCollapse | ImGui.WindowFlags.NoResize);
+
+    if (ImGui.BeginTabBar("##tabbar", ImGui.TabBarFlags.None)) 
     {
-        airBreakObj.airBreakState.label.textContent = "FALSE";
-        airBreakObj.airBreakState.color.color = "red";
+        if (ImGui.BeginTabItem("Local Player")) 
+        {
+            Tabs.localPlayer();
+
+            ImGui.EndTabItem();
+        }
+
+        if (ImGui.BeginTabItem("Weapon")) 
+        {
+            Tabs.weapon();
+
+            ImGui.EndTabItem();
+        }
+
+        if (ImGui.BeginTabItem("Visuals")) 
+        {
+            Tabs.visuals();
+
+            ImGui.EndTabItem();
+        }
+
+        if (ImGui.BeginTabItem("Players")) 
+        {
+            Tabs.players();
+                
+            ImGui.EndTabItem();
+        }
+
+        ImGui.EndTabBar();
     }
 
-    if (airBreakObj.airBreakSpeed.label.textContent != airBreak.speed)
-    {
-        airBreakObj.airBreakSpeed.label.textContent = airBreak.speed;
-    }
+    ImGui.End();
 
-    if (airBreakObj.antiAimState.label.textContent == "FALSE" && airBreak.antiAim == true)
-    {
-        airBreakObj.antiAimState.label.textContent = "TRUE";
-        airBreakObj.antiAimState.color.color = "green";
-    }
+    ImGui.EndFrame();
+    ImGui.Render();
 
-    if (airBreakObj.antiAimState.label.textContent == "TRUE" && airBreak.antiAim == false)
-    {
-        airBreakObj.antiAimState.label.textContent = "FALSE";
-        airBreakObj.antiAimState.color.color = "red";
-    }
-
-    if (clickerObj.autoMining.label.textContent == "FALSE" && autoMining == true)
-    {
-        clickerObj.autoMining.label.textContent = "TRUE";
-        clickerObj.autoMining.color.color = "green";
-    }
-
-    if (clickerObj.autoMining.label.textContent == "TRUE" && autoMining == false)
-    {
-        clickerObj.autoMining.label.textContent = "FALSE";
-        clickerObj.autoMining.color.color = "red";
-    }
+    ImGui_Impl.RenderDrawData(ImGui.GetDrawData());
 }
