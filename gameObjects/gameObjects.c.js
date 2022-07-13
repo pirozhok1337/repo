@@ -145,10 +145,8 @@ GameObjects.getLocalPlayer = function ()
             return gameObjects.localPlayer = bodies.at(i).data.components_0.array;
         }
     }
-
-    gameObjects.world = null;
     
-    return gameObjects.localPlayer = localPlayer.data.components_0.array;
+    return null;
 }
 
 GameObjects.getPhysicsComponent = function ()
