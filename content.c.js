@@ -84,16 +84,7 @@ function mainEvent(time)
     requestAnimationFrame(mainEvent);
 }
 
-if (GM_info.script.version != 0.5)
-{
-    alert(`У вас установлена устаревшая версия скрипта!\n
-You have an outdated version of the script installed!`);
-    window.open("https://github.com/sheezzmee/shizoval/blob/main/README.md", '_blank').focus();
-}
-else
-{
-    requestAnimationFrame(mainEvent);
+requestAnimationFrame(mainEvent);
     
-    alert(`Используйте только на тестовом сервере и только в режиме паркур!\n
+alert(`Используйте только на тестовом сервере и только в режиме паркур!\n
 Use only on the test server and only in parkour mode!`);
-}
