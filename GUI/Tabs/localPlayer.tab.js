@@ -84,7 +84,7 @@ Tabs.localPlayer = function ()
     if (clickerData.autoHealingData.state.value)
     {
         ImGui.SameLine();
-        ImGui.SliderFloat("Multiply##AH", clickerData.autoHealingData.mply.access, 0.01, 200, "%.2f");
+        ImGui.SliderInt("Multiply##AH", clickerData.autoHealingData.mply.access, 1, 5);
     }
 
     ImGui.Checkbox("Auto Mining", clickerData.autoMining.access);
@@ -108,6 +108,6 @@ Tabs.localPlayer = function ()
     if (otherData.rapidUpdateData.state.value)
     {
         ImGui.SameLine();
-        ImGui.SliderFloat("Multiply##RU", otherData.rapidUpdateData.mply.access, 0.01, 200, "%.2f");
+        ImGui.SliderInt("Multiply##RU", otherData.rapidUpdateData.mply.access, 1, 5);
     }
 }

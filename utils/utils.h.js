@@ -1,12 +1,12 @@
-// utils.h.js
-
-if (GM_info.script.version != 0.5)
+if (GM_info.script.version != 0.51)
 {
     alert(`У вас установлена устаревшая версия скрипта!\n
 You have an outdated version of the script installed!`);
     window.open("https://github.com/sheezzmee/shizoval/blob/main/README.md", '_blank').focus();
     throw new Error("stop");
 }
+
+// utils.h.js
 
 class Utils
 {
@@ -26,6 +26,9 @@ class Utils
 
     getBodyById         = null; // args: 1 - world, 2 - localPlayer, 3 - playerId
     getPlayerBody       = null; // args: 1 - player
+
+    saveStates          = null; // args: void
+    getStates           = null; // args: void
 }
 
 utilsObjects = 

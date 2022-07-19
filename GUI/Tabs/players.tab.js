@@ -1,6 +1,7 @@
 // players.tab.js
 
 let selected = new ImGui_Var(-1);
+let selectedPlayerName = "none";
 let targetId;
 let onlyEnemy = new ImGui_Var(false);
 
@@ -60,8 +61,11 @@ Tabs.players = function ()
             continue;
         }
 
-        if (ImGui.Selectable(Utils.getPlayerName(playersArray.at(i)), selected.value === i))
+        let playerName = Utils.getPlayerName(playersArray.at(i));
+
+        if (ImGui.Selectable(playerName, selected.value === i))
         {
+            selectedPlayerName = playerName;
             selected.value = i;
         }
     }
@@ -80,43 +84,13 @@ Tabs.players = function ()
             return;
         }
 
-        ImGui.Text(`Selected player: ${Utils.getPlayerName(playersArray.at(selected.value))}`);
+        ImGui.Text(`Selected player: ${selectedPlayerName}`);
     
         let playerBody = Utils.getPlayerBody(playersArray.at(selected.value));
 
         if (!playerBody)
         {
             return;
-        }
-
-        if (ImGui.Button("Teleport to Selected Player"))
-        {
-            if (!playerBody)
-            {
-                return;
-            }
-
-            let position = playerBody.state.position;
-
-            if (position)
-            {
-                physicsComponent.body.state.position.x = position.x;
-                physicsComponent.body.state.position.y = position.y;
-                physicsComponent.body.state.position.z = position.z;
-
-                physicsComponent.body.state.orientation.w = Math.sin(-(camera.direction - Math.PI) / 2);
-                physicsComponent.body.state.orientation.z = Math.cos(-(camera.direction - Math.PI) / 2);
-                physicsComponent.body.state.orientation.x = 0;
-                physicsComponent.body.state.orientation.y = 0;
-                        
-                physicsComponent.body.state.angularVelocity.x = 0;
-                physicsComponent.body.state.angularVelocity.y = 0;
-                physicsComponent.body.state.angularVelocity.z = 0;
-        
-                physicsComponent.body.state.velocity.x = 0;
-                physicsComponent.body.state.velocity.y = 0;
-                physicsComponent.body.state.velocity.z = 0;
-            }
         }
 
         if (ImGui.Button("Set target"))
@@ -130,6 +104,8 @@ Tabs.players = function ()
                 }
             }
         }
+
+        ImGui.SameLine();
 
         ImGui.Checkbox("Stick", stickData.state.access);
 

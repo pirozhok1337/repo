@@ -9,8 +9,7 @@ otherData =
     rapidUpdateData:
     {
         state: new ImGui_Var(true),
-        mply: new ImGui_Var(0.01),
-        counter: 0
+        mply: new ImGui_Var(1)
     }
 };
 
@@ -86,23 +85,8 @@ Other.process = function (localPlayer)
         return;
     }
 
-    if (otherData.rapidUpdateData.mply.value < 1)
+    for (let i = 0; i < otherData.rapidUpdateData.mply.value; i++)
     {
-        if (otherData.rapidUpdateData.counter >= parseFloat((otherData.rapidUpdateData.mply.value * 10).toFixed(2)))
-        {
-            otherData.rapidUpdateData.counter = 0;
-            physicsUpdate.sendState_0(physicsComponent.getInterpolatedBodyState());
-        }
-        else
-        {
-            otherData.rapidUpdateData.counter++;
-        }
-    } 
-    else
-    {
-        for (let i = 0; i < otherData.rapidUpdateData.mply.value; i++)
-        {
-            physicsUpdate.sendState_0(physicsComponent.getInterpolatedBodyState());
-        }
+        physicsUpdate.sendState_0(physicsComponent.getInterpolatedBodyState());
     }
 }

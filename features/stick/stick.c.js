@@ -3,12 +3,13 @@
 stickData = 
 {
     state: new ImGui_Var(false),
+    temp: false,
     target: null
 };
 
 Stick.process = function (localPlayer)
 {
-    if (!stickData.state.value)
+    if (!stickData.state.value && stickData.temp == false)
     {
         return;
     }
@@ -43,6 +44,18 @@ Stick.process = function (localPlayer)
     {
         return;
     }
+
+    if (!stickData.state.value && stickData.temp == true)
+    {
+        stickData.temp = false;
+
+        physicsComponent.body.state.velocity.x = 0;
+        physicsComponent.body.state.velocity.y = 0;
+        physicsComponent.body.state.velocity.z = 0;
+        return;
+    }
+
+    stickData.temp = true;
 
     physicsComponent.body.state.position.x = stickData.target.state.position.x;
     physicsComponent.body.state.position.y = stickData.target.state.position.y;

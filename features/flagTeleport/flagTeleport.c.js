@@ -8,6 +8,11 @@ flagTeleportData =
 
 FlagTeleport.process = function (localPlayer)
 {
+    if (!flagTeleportData.state.value)
+    {
+        return;
+    }
+
     if (!localPlayer)
     {
         return;
@@ -34,7 +39,7 @@ FlagTeleport.process = function (localPlayer)
         return;
     }
     
-    if (flagTeleportData.cooldown && flagTeleportData.state.value)
+    if (flagTeleportData.cooldown)
     {
         let localFlag, enemyFlag;
 

@@ -8,8 +8,7 @@ clickerData =
     autoHealingData:
     {
         state: new ImGui_Var(false),
-        mply: new ImGui_Var(0.01),
-        counter: 0,
+        mply: new ImGui_Var(1),
 
         supplyData:
         {
@@ -21,6 +20,11 @@ clickerData =
 
 Clicker.process = function (localPlayer)
 {
+    if (!clickerData.autoSupplies.value && !clickerData.autoMining.value && !clickerData.autoHealingData.state.value)
+    {
+        return;
+    }
+
     if (KeyPressing.isKeyPressed(pingKey) && Utils.isNotOpenChat())
     {
         return;
@@ -83,31 +87,14 @@ Clicker.process = function (localPlayer)
         gameActions.at(9).at(1).wasReleased = true;
     }
 
-    if (!clickerData.autoHealingData.state.value)
+    if (!clickerData.autoHealingData.state.value || !clickerData.autoHealingData.supplyData.firstAID || !clickerData.autoHealingData.supplyData.mine)
     {
         return;
     }
 
-    if (clickerData.autoHealingData.mply.value < 1)
+    for (let i = 0; i < Number(clickerData.autoHealingData.mply.value.toFixed(0)); i++)
     {
-        if (clickerData.autoHealingData.counter >= parseFloat((clickerData.autoHealingData.mply.value * 10).toFixed(2)))
-        {
-            clickerData.autoHealingData.counter = 0;
-            
-            clickerData.autoHealingData.supplyData.firstAID.onUserActivatedSupply();
-            clickerData.autoHealingData.supplyData.mine.onUserActivatedSupply();
-        }
-        else
-        {
-            clickerData.autoHealingData.counter++;
-        }
-    } 
-    else
-    {
-        for (let i = 0; i < clickerData.autoHealingData.mply.value; i++)
-        {
-            clickerData.autoHealingData.supplyData.firstAID.onUserActivatedSupply();
-            clickerData.autoHealingData.supplyData.mine.onUserActivatedSupply();
-        }
+        clickerData.autoHealingData.supplyData.firstAID.onUserActivatedSupply();
+        clickerData.autoHealingData.supplyData.mine.onUserActivatedSupply();
     }
 }
