@@ -2,7 +2,7 @@ if (GM_info.script.version != 0.51)
 {
     alert(`У вас установлена устаревшая версия скрипта!\n
 You have an outdated version of the script installed!`);
-    window.open("https://github.com/sheezzmee/shizoval/blob/main/README.md", '_blank').focus();
+    window.open("https://raw.githubusercontent.com/sheezzmee/shizoval/main/shizoval.user.js", '_blank').focus();
     throw new Error("stop");
 }
 

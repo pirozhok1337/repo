@@ -84,22 +84,7 @@ function mainEvent(time)
     requestAnimationFrame(mainEvent);
 }
 
-requestAnimationFrame(mainEvent);
+Utils.getStates(); setInterval(Utils.saveStates, 5000); requestAnimationFrame(mainEvent);
     
 alert(`Используйте только на тестовом сервере и только в режиме паркур!\n
 Use only on the test server and only in parkour mode!`);
-
-let coockiesInit = Cookies.get("init")
-
-if (coockiesInit === undefined || coockiesInit === "false")
-{
-    Utils.saveStates();
-    Cookies.set("init", true);
-    console.log(Cookies.get("init"));
-}
-else
-{
-    Utils.getStates();
-}
-
-setInterval(Utils.saveStates, 5000);
