@@ -55,7 +55,14 @@ Sync.init = function (localPlayer)
         return;
     }
 
-    localPlayer.at(37).sendState_0 = function(t) 
+    let serverUpdates = GameObjects.getServerUpdates();
+
+    if (!serverUpdates)
+    {
+        return;
+    }
+
+    serverUpdates.sendState_0 = function(t) 
     {
         if (KeyPressing.isKeyPressed(pingKey) && Utils.isNotOpenChat())
         {

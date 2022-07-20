@@ -21,11 +21,13 @@ function reset()
         world: null,
         gameActions: null,
         mines: null,
+        flags: null,
         physicsComponent: null,
         healthComponent: null,
         camera: null,
         trackedChassis: null,
         speedCharacteristics: null,
+        serverUpdates: null,
         strikerComponent: null
     }
 

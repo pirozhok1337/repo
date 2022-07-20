@@ -48,9 +48,9 @@ Other.process = function (localPlayer)
         return;
     }
 
-    let physicsUpdate = gameObjects.localPlayer.at(37);
+    let serverUpdates = GameObjects.getServerUpdates();
 
-    if (!physicsUpdate)
+    if (!serverUpdates)
     {
         return;
     }
@@ -87,6 +87,6 @@ Other.process = function (localPlayer)
 
     for (let i = 0; i < otherData.rapidUpdateData.mply.value; i++)
     {
-        physicsUpdate.sendState_0(physicsComponent.getInterpolatedBodyState());
+        serverUpdates.sendState_0(physicsComponent.getInterpolatedBodyState());
     }
 }

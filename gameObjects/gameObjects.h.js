@@ -14,7 +14,8 @@ class GameObjects
     getHealthComponent      = null; // args: void
     getCamera               = null; // args: void
     getTrackedChassis       = null; // args: void 
-    getSpeedCharacteristics = null; // args: void 
+    getSpeedCharacteristics = null; // args: void
+    getServerUpdates        = null; // args: void
 
     // Weapon
     getStrikerComponent     = null; // args: void

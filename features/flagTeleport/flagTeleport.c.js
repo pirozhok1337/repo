@@ -38,6 +38,13 @@ FlagTeleport.process = function (localPlayer)
     {
         return;
     }
+
+    let serverUpdates = GameObjects.getServerUpdates();
+
+    if (!serverUpdates)
+    {
+        return;
+    }
     
     if (flagTeleportData.cooldown)
     {
@@ -67,13 +74,13 @@ FlagTeleport.process = function (localPlayer)
             t.position.y = enemyFlagPosition.y;
             t.position.z = enemyFlagPosition.z;
 
-            localPlayer.at(37).sendUpdate_0(t, world.physicsTime);
+            serverUpdates.sendUpdate_0(t, world.physicsTime);
 
             t.position.x = localFlagPosition.x;
             t.position.y = localFlagPosition.y;
             t.position.z = localFlagPosition.z;
 
-            localPlayer.at(37).sendUpdate_0(t, world.physicsTime);
+            serverUpdates.sendUpdate_0(t, world.physicsTime);
 
             setTimeout(() => 
             {

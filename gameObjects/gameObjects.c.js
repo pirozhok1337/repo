@@ -12,6 +12,7 @@ gameObjects =
     camera: null,
     trackedChassis: null,
     speedCharacteristics: null,
+    serverUpdates: null,
     strikerComponent: null
 }
 
@@ -269,6 +270,31 @@ GameObjects.getSpeedCharacteristics = function ()
         localPlayer.at(i).__proto__.hasOwnProperty("maxSpeedSmoother_0"))
         {
             return gameObjects.speedCharacteristics = localPlayer.at(i);
+        }
+    }
+
+    return null; 
+}
+
+GameObjects.getServerUpdates = function ()
+{
+    if (gameObjects.serverUpdates)
+    {
+        return gameObjects.serverUpdates;
+    }
+
+    let localPlayer = this.getLocalPlayer();
+
+    if (!localPlayer)
+    {
+        return null;    
+    }
+
+    for (let i = 0; i < localPlayer.length; i++)
+    {
+        if (localPlayer.at(i).hasOwnProperty("needImmediateUpdate_0"))
+        {
+            return gameObjects.serverUpdates = localPlayer.at(i);
         }
     }
 
