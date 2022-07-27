@@ -62,7 +62,6 @@ Striker.init = function (localPlayer)
         if (strikerData.aimBot.value)
         {
             strikerData.getTargetWithScope.value ? targetId = e : t.targetId = targetId;
-            this.lockTarget_gcez93$$default(t, targetId);
             return true;
         }
         else
