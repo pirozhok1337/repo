@@ -4,6 +4,7 @@ class GameObjects
 {
     // World
     getWorld                = null; // args: void
+    getGameMode             = null; // args: void
     getGameActions          = null; // args: void
     getMines                = null; // args: void
     getFlags                = null; // args: void

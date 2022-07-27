@@ -1,4 +1,4 @@
-if (GM_info.script.version != 0.51)
+if (GM_info.script.version != 0.52)
 {
     alert(`У вас установлена устаревшая версия скрипта!\n
 You have an outdated version of the script installed!`);

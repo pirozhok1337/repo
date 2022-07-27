@@ -4,6 +4,7 @@ gameObjects =
 {
     localPlayer: null,
     world: null,
+    gameMode: null,
     gameActions: null,
     mines: null,
     flags: null,
@@ -51,7 +52,7 @@ GameObjects.getGameActions = function ()
 {
     if (gameObjects.gameActions)
     {
-        return gameObjects.gameActions;
+        return Array.from(gameObjects.gameActions);
     }
 
     let world = this.getWorld();
@@ -61,7 +62,32 @@ GameObjects.getGameActions = function ()
         return null;
     }
 
-    return gameObjects.gameActions = Array.from(world.inputManager.input.gameActions_0.map);
+    return Array.from(gameObjects.gameActions = world.inputManager.input.gameActions_0.map);
+}
+
+GameObjects.getGameMode = function ()
+{
+    if (gameObjects.gameMode)
+    {
+        return gameObjects.gameMode;
+    }
+
+    let localPlayer = this.getLocalPlayer();
+
+    if (!localPlayer)
+    {
+        return null;    
+    }
+
+    for (let i = 0; i < localPlayer.length; i++)
+    {
+        if (localPlayer.at(i).__proto__.hasOwnProperty("gameMode_0"))
+        {
+            return gameObjects.gameMode = localPlayer.at(i).gameMode_0.components_0.array;
+        }
+    }
+
+    return null;
 }
 
 GameObjects.getMines = function ()
@@ -78,7 +104,7 @@ GameObjects.getMines = function ()
         return null;    
     }
     
-    let gameMode_0 = localPlayer.at(0).gameMode_0.components_0.array;
+    let gameMode_0 = GameObjects.getGameMode();
 
     if (!gameMode_0)
     {
@@ -95,14 +121,7 @@ GameObjects.getFlags = function ()
         return gameObjects.flags;
     }
 
-    let localPlayer = this.getLocalPlayer();
-
-    if (!localPlayer)
-    {
-        return null;    
-    }
-    
-    let gameMode_0 = localPlayer.at(0).gameMode_0.components_0.array;
+    let gameMode_0 = GameObjects.getGameMode();
 
     if (!gameMode_0)
     {

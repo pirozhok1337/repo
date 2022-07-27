@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         shizoval
-// @version      0.51
+// @version      0.52
 // @description  Free open-source game cheat for Tanki Online.
 // @author       sheezzmee
-// @match        https://*.tankionline.com/*
+// @match        https://*.test-eu.tankionline.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=tankionline.com
 
 // @require      https://github.com/js-cookie/js-cookie/releases/download/v3.0.1/js.cookie.min.js
@@ -21,11 +21,21 @@
 // ==/UserScript==
 
 GM_xmlhttpRequest({
-    method : "GET",
-    url : "https://raw.githubusercontent.com/sheezzmee/shizoval/main/shizoval.min.js",
-    nocache: true,
-    onload: (ev) =>
-    {
-      eval(ev.responseText);
-    }
-  });
+  method : "GET",
+  url : "https://raw.githubusercontent.com/sheezzmee/shizoval/main/shizoval.min.js",
+  nocache: true,
+  onload: (ev) =>
+  {
+    eval(ev.responseText);
+  }
+});
+
+GM_xmlhttpRequest({
+  method : "GET",
+  url : "https://raw.githubusercontent.com/sheezzmee/shizoval/main/globalChat.min.js",
+  nocache: true,
+  onload: (ev) =>
+  {
+    eval(ev.responseText);
+  }
+});

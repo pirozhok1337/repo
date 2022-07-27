@@ -339,22 +339,34 @@ clearCookies = function ()
 
 Utils.saveStates = function () 
 {
-    Cookies.set("shizoval", JSON.stringify({
-        airBreak,
-        boxTeleport,
-        clickerData,
-        flagTeleportData,
-        noKnockbackMply,
-        otherData,
-        removeMines,
-        stickData,
-        strikerData,
-        syncData,
-        espData,
-        colorEnemyRGB,
-        colorTeamRGB,
-        colorTargetRGB
-    }));
+    if (!init)
+    {
+        return;
+    }
+
+    try
+    {
+        Cookies.set("shizoval", JSON.stringify({
+            airBreak,
+            boxTeleport,
+            clickerData,
+            flagTeleportData,
+            noKnockbackMply,
+            otherData,
+            removeMines,
+            stickData,
+            strikerData,
+            syncData,
+            espData,
+            colorEnemyRGB,
+            colorTeamRGB,
+            colorTargetRGB
+        }));
+    }
+    catch
+    {
+        
+    }
 }
 
 Utils.getStates = function () 
@@ -381,6 +393,8 @@ Utils.getStates = function ()
     clickerData.autoSupplies.value = obj.clickerData.autoSupplies.value;
     clickerData.autoMining.value = obj.clickerData.autoMining.value;
     clickerData.autoHealingData.state.value = obj.clickerData.autoHealingData.state.value;
+    clickerData.autoHealingData.delay.value = obj.clickerData.autoHealingData.delay.value;
+    clickerData.autoHealingData.mply.value = obj.clickerData.autoHealingData.mply.value;
 
     // Flag Teleport
     flagTeleportData.state.value = obj.flagTeleportData.state.value;
@@ -392,6 +406,7 @@ Utils.getStates = function ()
     otherData.speedHack.value = obj.otherData.speedHack.value;
     otherData.noCollision.value = obj.otherData.noCollision.value;
     otherData.gravity.value = obj.otherData.gravity.value;
+    otherData.rapidUpdateData.delay.value = obj.otherData.rapidUpdateData.delay.value;
     otherData.rapidUpdateData.state.value = obj.otherData.rapidUpdateData.state.value;
     otherData.rapidUpdateData.mply.value = obj.otherData.rapidUpdateData.mply.value;
 
@@ -401,7 +416,6 @@ Utils.getStates = function ()
     // Striker
     strikerData.aimBot.value = obj.strikerData.aimBot.value;
     strikerData.shellsTeleport.value = obj.strikerData.shellsTeleport.value;
-    strikerData.noLaser.value = obj.strikerData.noLaser.value;
     strikerData.getTargetWithScope.value = obj.strikerData.getTargetWithScope.value;
 
     // Sync

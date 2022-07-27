@@ -8,6 +8,8 @@ otherData =
 
     rapidUpdateData:
     {
+        delay: new ImGui_Var(0),
+        timeout: null,
         state: new ImGui_Var(true),
         mply: new ImGui_Var(1)
     }
@@ -85,8 +87,23 @@ Other.process = function (localPlayer)
         return;
     }
 
-    for (let i = 0; i < otherData.rapidUpdateData.mply.value; i++)
+    if (otherData.rapidUpdateData.delay.value === 0)
     {
-        serverUpdates.sendState_0(physicsComponent.getInterpolatedBodyState());
+        for (let i = 0; i < otherData.rapidUpdateData.mply.value; i++)
+        {
+            serverUpdates.sendState_0(physicsComponent.getInterpolatedBodyState());
+        }
+    }
+    else if (!otherData.rapidUpdateData.timeout)
+    {
+        otherData.rapidUpdateData.timeout = setTimeout(() => 
+        {
+            for (let i = 0; i < otherData.rapidUpdateData.mply.value; i++)
+            {
+                serverUpdates.sendState_0(physicsComponent.getInterpolatedBodyState());
+            }
+
+            otherData.rapidUpdateData.timeout = null;
+        }, otherData.rapidUpdateData.delay.value);
     }
 }

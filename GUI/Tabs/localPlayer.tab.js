@@ -84,7 +84,16 @@ Tabs.localPlayer = function ()
     if (clickerData.autoHealingData.state.value)
     {
         ImGui.SameLine();
-        ImGui.SliderInt("Multiply##AH", clickerData.autoHealingData.mply.access, 1, 5);
+        ImGui.PushItemWidth(120);
+        ImGui.SliderInt("Multiply##AHM", clickerData.autoHealingData.mply.access, 1, 5);
+        ImGui.SameLine();
+        ImGui.InputInt("Delay##AHD", clickerData.autoHealingData.delay.access, 10);
+        ImGui.PopItemWidth(2);
+
+        if (clickerData.autoHealingData.delay.value < 0)
+        {
+            clickerData.autoHealingData.delay.value = 0;
+        }
     }
 
     ImGui.Checkbox("Auto Mining", clickerData.autoMining.access);
@@ -108,6 +117,15 @@ Tabs.localPlayer = function ()
     if (otherData.rapidUpdateData.state.value)
     {
         ImGui.SameLine();
-        ImGui.SliderInt("Multiply##RU", otherData.rapidUpdateData.mply.access, 1, 5);
+        ImGui.PushItemWidth(120);
+        ImGui.SliderInt("Multiply##RUM", otherData.rapidUpdateData.mply.access, 1, 5);
+        ImGui.SameLine();
+        ImGui.InputInt("Delay##RUD", otherData.rapidUpdateData.delay.access, 10);
+        ImGui.PopItemWidth(2);
+
+        if (otherData.rapidUpdateData.delay.value < 0)
+        {
+            otherData.rapidUpdateData.delay.value = 0;
+        }
     }
 }

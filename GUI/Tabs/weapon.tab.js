@@ -8,10 +8,6 @@ Tabs.weapon = function ()
 
     ImGui.SameLine();
 
-    ImGui.Checkbox("No Laser##striker", strikerData.noLaser.access);
-
-    ImGui.SameLine();
-
     ImGui.Checkbox("Rockets Teleport##striker", strikerData.shellsTeleport.access);
 
     ImGui.Checkbox("Lock Target With Scope##striker", strikerData.getTargetWithScope.access);

@@ -7,6 +7,8 @@ clickerData =
 
     autoHealingData:
     {
+        delay: new ImGui_Var(0),
+        timeout: null,
         state: new ImGui_Var(false),
         mply: new ImGui_Var(1),
 
@@ -92,9 +94,25 @@ Clicker.process = function (localPlayer)
         return;
     }
 
-    for (let i = 0; i < Number(clickerData.autoHealingData.mply.value.toFixed(0)); i++)
+    if (clickerData.autoHealingData.delay.value === 0)
     {
-        clickerData.autoHealingData.supplyData.firstAID.onUserActivatedSupply();
-        clickerData.autoHealingData.supplyData.mine.onUserActivatedSupply();
+        for (let i = 0; i < clickerData.autoHealingData.mply.value; i++)
+        {
+            clickerData.autoHealingData.supplyData.firstAID.onUserActivatedSupply();
+            clickerData.autoHealingData.supplyData.mine.onUserActivatedSupply();
+        }
+    }
+    else if (!clickerData.autoHealingData.timeout)
+    {
+        clickerData.autoHealingData.timeout = setTimeout(() => 
+        {
+            for (let i = 0; i < clickerData.autoHealingData.mply.value; i++)
+            {
+                clickerData.autoHealingData.supplyData.firstAID.onUserActivatedSupply();
+                clickerData.autoHealingData.supplyData.mine.onUserActivatedSupply();
+            }
+
+            clickerData.autoHealingData.timeout = null;
+        }, clickerData.autoHealingData.delay.value);
     }
 }

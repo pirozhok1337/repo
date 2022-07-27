@@ -4,7 +4,6 @@ strikerData =
 {
     aimBot: new ImGui_Var(true),
     shellsTeleport: new ImGui_Var(true),
-    noLaser: new ImGui_Var(true),
     state: false,
     salvoRocketsCount: 8,
     shellsTimeout: null,
@@ -106,11 +105,6 @@ Striker.process = function (localPlayer)
     if (!strikerData.shellCache)
     {
         return;
-    }
-
-    if (strikerData.type == "striker" && strikerData.noLaser.value)
-    {
-        striker.stopAiming();
     }
 
     if (!strikerData.shellsTeleport.value)

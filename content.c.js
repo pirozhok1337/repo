@@ -7,7 +7,7 @@ let pingKey = 74; /* key: J */
 
 function reset()
 {
-    init = airBreak.state = stickData.state.value = syncData.state.value = menuShow = false;
+    init = airBreak.state = stickData.state.value = menuShow = false;
     flagTeleportData.cooldown = true;
 
     let canvas = document.getElementById("canvas__imgui");
@@ -19,6 +19,7 @@ function reset()
     {
         localPlayer: null,
         world: null,
+        gameMode: null,
         gameActions: null,
         mines: null,
         flags: null,
@@ -87,6 +88,7 @@ function mainEvent(time)
 }
 
 Utils.getStates(); setInterval(Utils.saveStates, 5000); requestAnimationFrame(mainEvent);
+console.clear();
     
 alert(`Используйте только на тестовом сервере и только в режиме паркур!\n
 Use only on the test server and only in parkour mode!`);
