@@ -57,11 +57,14 @@ Striker.init = function (localPlayer)
         strikerData.salvoRocketsCount = striker.scorpioData_0.secondarySalvoSize;
     }
 
+    striker.lockingTargetUpdateMessage_0.init_dcrrv6$ = function() {};
+
     striker.lockTarget_gcez93$ = function (t, e, n)
     {
         if (strikerData.aimBot.value)
         {
             strikerData.getTargetWithScope.value ? targetId = e : t.targetId = targetId;
+            this.lockTarget_gcez93$$default(t, targetId);
             return true;
         }
         else

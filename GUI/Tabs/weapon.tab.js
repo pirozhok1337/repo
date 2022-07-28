@@ -10,6 +10,8 @@ Tabs.weapon = function ()
 
     ImGui.Checkbox("Rockets Teleport##striker", strikerData.shellsTeleport.access);
 
+    ImGui.SameLine();
+
     ImGui.Checkbox("Lock Target With Scope##striker", strikerData.getTargetWithScope.access);
 
     ImGui.Separator();
