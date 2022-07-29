@@ -385,6 +385,7 @@ Utils.getStates = function ()
     airBreak.enabled.value = obj.airBreak.enabled.value;
     airBreak.airWalk.value = obj.airBreak.airWalk.value;
     airBreak.speed.value = obj.airBreak.speed.value;
+    airBreak.smooth.value = obj.airBreak.smooth.value;
 
     // Box Teleport
     boxTeleport.value = obj.boxTeleport.value;

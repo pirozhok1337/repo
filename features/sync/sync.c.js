@@ -107,15 +107,16 @@ Sync.init = function (localPlayer)
             {
                 let bounds = world.entities_0.toArray().at(0).components_0.array.at(0).bounds;
 
-                t.position.x = Utils.getRandomArbitrary(bounds.minX, bounds.maxX);
-                t.position.y = Utils.getRandomArbitrary(bounds.minY, bounds.maxY);
-                t.position.z = Utils.getRandomArbitrary(bounds.maxZ + 60, bounds.maxZ + 2000);
+                for (let i = 0; i < 2; i++)
+                {
+                    t.position.x = Utils.getRandomArbitrary(bounds.minX, bounds.maxX);
+                    t.position.y = Utils.getRandomArbitrary(bounds.minY, bounds.maxY);
+                    t.position.z = Utils.getRandomArbitrary(bounds.maxZ + 60, bounds.maxZ + 1900);
+                    
+                    this.sendUpdate_0(t, this.world.physicsTime);
+                }
 
-                this.sendUpdate_0(t, this.world.physicsTime);
-
-                t.position.x = Utils.getRandomArbitrary(bounds.minX, bounds.maxX);
-                t.position.y = Utils.getRandomArbitrary(bounds.minY, bounds.maxY);
-                t.position.z = Utils.getRandomArbitrary(bounds.maxZ + 60, bounds.maxZ + 2000);
+                return;
             }
         }
         

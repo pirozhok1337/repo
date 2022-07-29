@@ -7,7 +7,8 @@ airBreak =
     state: false,
     airWalk: new ImGui_Var(false),
     speed: new ImGui_Var(70),
-    position: { x: 0, y: 0, z: 0 }
+    position: { x: 0, y: 0, z: 0 },
+    smooth: new ImGui_Var(2)
 }
 
 let startSpeed = 
@@ -124,7 +125,7 @@ AirBreak.process = function (localPlayer)
         return;
     }
 
-    let dt = world.physicsScene_0.dt * 2;
+    let dt = world.physicsScene_0.dt * airBreak.smooth.value;
     let direction = camera.direction;
 
     if (!airBreak.airWalk.value)

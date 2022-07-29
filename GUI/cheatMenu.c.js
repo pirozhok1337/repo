@@ -62,7 +62,7 @@ CheatMenu.draw = function (time)
     ImGui.NewFrame();
     
     ImGui.SetNextWindowSize(new ImGui.ImVec2(650, 370), ImGui.Cond.FirstUseEver);
-    ImGui.Begin("shizoval", null, ImGui.WindowFlags.NoCollapse | ImGui.WindowFlags.NoResize);
+    ImGui.Begin("shizoval", null, ImGui.WindowFlags.NoCollapse);
 
     if (ImGui.BeginTabBar("##tabbar", ImGui.TabBarFlags.None)) 
     {

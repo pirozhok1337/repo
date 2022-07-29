@@ -4,7 +4,12 @@ Tabs.localPlayer = function ()
 {
     ImGui.Checkbox("AirBreak [R. Shift]", airBreak.enabled.access);
     ImGui.SameLine();
-    ImGui.SliderInt("##airBreak.speed", airBreak.speed.access, 1, 300);
+    ImGui.PushItemWidth(120);
+    ImGui.SliderInt("Speed##airBreak.speed", airBreak.speed.access, 1, 300);
+    ImGui.SameLine();
+    ImGui.SliderInt("Smooth##airBreak.smooth", airBreak.smooth.access, 1, 20);
+    ImGui.PopItemWidth(2);
+    ImGui.SameLine();
     ImGui.Checkbox("AirWalk", airBreak.airWalk.access);
 
     ImGui.Checkbox("Sync", syncData.state.access);

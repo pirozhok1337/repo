@@ -55,7 +55,7 @@ GameObjects.getGameActions = function ()
         return Array.from(gameObjects.gameActions);
     }
 
-    let world = this.getWorld();
+    let world = GameObjects.getWorld();
 
     if (!world)
     {
@@ -72,22 +72,14 @@ GameObjects.getGameMode = function ()
         return gameObjects.gameMode;
     }
 
-    let localPlayer = this.getLocalPlayer();
+    let world = GameObjects.getWorld();
 
-    if (!localPlayer)
+    if (!world)
     {
-        return null;    
+        return null;
     }
 
-    for (let i = 0; i < localPlayer.length; i++)
-    {
-        if (localPlayer.at(i).__proto__.hasOwnProperty("gameMode_0"))
-        {
-            return gameObjects.gameMode = localPlayer.at(i).gameMode_0.components_0.array;
-        }
-    }
-
-    return null;
+    return gameObjects.gameMode = world.entities_0.toArray().at(0).components_0.array;
 }
 
 GameObjects.getMines = function ()
@@ -97,7 +89,7 @@ GameObjects.getMines = function ()
         return gameObjects.mines;
     }
 
-    let localPlayer = this.getLocalPlayer();
+    let localPlayer = GameObjects.getLocalPlayer();
 
     if (!localPlayer)
     {
@@ -149,7 +141,7 @@ GameObjects.getLocalPlayer = function ()
         return gameObjects.localPlayer;
     }
 
-    let world = this.getWorld();
+    let world = GameObjects.getWorld();
 
     if (!world)
     {
@@ -176,7 +168,7 @@ GameObjects.getPhysicsComponent = function ()
         return gameObjects.physicsComponent;
     }
 
-    let localPlayer = this.getLocalPlayer();
+    let localPlayer = GameObjects.getLocalPlayer();
 
     if (!localPlayer)
     {
@@ -201,7 +193,7 @@ GameObjects.getHealthComponent = function ()
         return gameObjects.healthComponent;
     }
 
-    let localPlayer = this.getLocalPlayer();
+    let localPlayer = GameObjects.getLocalPlayer();
 
     if (!localPlayer)
     {
@@ -226,7 +218,7 @@ GameObjects.getCamera = function ()
         return gameObjects.camera;
     }
 
-    let localPlayer = this.getLocalPlayer();
+    let localPlayer = GameObjects.getLocalPlayer();
 
     if (!localPlayer)
     {
@@ -251,7 +243,7 @@ GameObjects.getTrackedChassis = function ()
         return gameObjects.trackedChassis;
     }
 
-    let localPlayer = this.getLocalPlayer();
+    let localPlayer = GameObjects.getLocalPlayer();
 
     if (!localPlayer)
     {
@@ -276,7 +268,7 @@ GameObjects.getSpeedCharacteristics = function ()
         return gameObjects.speedCharacteristics;
     }
 
-    let localPlayer = this.getLocalPlayer();
+    let localPlayer = GameObjects.getLocalPlayer();
 
     if (!localPlayer)
     {
@@ -302,7 +294,7 @@ GameObjects.getServerUpdates = function ()
         return gameObjects.serverUpdates;
     }
 
-    let localPlayer = this.getLocalPlayer();
+    let localPlayer = GameObjects.getLocalPlayer();
 
     if (!localPlayer)
     {
@@ -327,7 +319,7 @@ GameObjects.getStrikerComponent = function ()
         return gameObjects.strikerComponent;
     }
 
-    let localPlayer = this.getLocalPlayer();
+    let localPlayer = GameObjects.getLocalPlayer();
 
     if (!localPlayer)
     {
