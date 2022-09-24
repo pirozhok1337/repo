@@ -1,5 +1,5 @@
 # shizoval
-Free open-source game cheat for Tanki Online.
+The source code is temporarily closed.
 
 **солевой#4769**
 
@@ -14,11 +14,7 @@ Free open-source game cheat for Tanki Online.
 
 ## Клавиши
 
-`INSERT` - Открыть меню
-
-`SHIFT` (правый) - включить/отключить полет
-
-`J` - пока нажата клавиша, отключает функции, которые вызывает краши при большом пинге
+`INSERT`, `NumPad 0`, `/` - Открыть меню
 
 </details>
 
@@ -33,10 +29,6 @@ Free open-source game cheat for Tanki Online.
 
 ## Binds
 
-`INSERT` - Open cheat menu
-
-`SHIFT` (right) - toggle AirBreak
-
-`J` - ping key (while the key is pressed: disables functions that cause crashes on high ping)
+`INSERT`, `NumPad 0`, `/` - Open cheat menu
   
 </details>
