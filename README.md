@@ -15,10 +15,6 @@ The source code is temporarily closed.
 ## Клавиши
 
 `INSERT`, `NumPad 0`, `/` - Открыть меню
-  
-`NumPad 4` - Переключить цель для Stick
-  
-`NumPad 6`, `F6` - Переключить цель для шота
 
 </details>
 
@@ -34,9 +30,5 @@ The source code is temporarily closed.
 ## Binds
 
 `INSERT`, `NumPad 0`, `/` - Open cheat menu
-  
-`NumPad 4` - Switch the target for Stick
-  
-`NumPad 6`, `F6` - Switch the target for rocket teleport
   
 </details>
