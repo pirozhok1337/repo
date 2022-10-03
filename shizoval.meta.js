@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         shizoval
-// @version      0.63.4
+// @version      0.64
 // @description  Free open-source game cheat for Tanki Online.
 // @author       sheezzmee
 // @match        https://*.test-eu.tankionline.com/*
