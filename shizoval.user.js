@@ -11,7 +11,7 @@
 // @require      https://raw.githubusercontent.com/flyover/imgui-js/master/dist/imgui_impl.umd.js
 
 // @downloadURL  https://raw.githubusercontent.com/sheezzmee/shizoval/main/shizoval.user.js
-// @updateURL    https://raw.githubusercontent.com/sheezzmee/shizoval/main/shizoval.user.js
+// @updateURL    https://raw.githubusercontent.com/sheezzmee/shizoval/main/shizoval.meta.js
 
 // @run-at       document-end
 
