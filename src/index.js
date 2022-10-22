@@ -60,7 +60,7 @@ if (GM_info.script.version !== pjson.version)
     throw new Error('stop');
 }
 
-unsafeWindow.addEventListener('load', function main() {
+(function main() {
     requestAnimationFrame(main);
 
     const root                  = gameObjects.root,
@@ -111,4 +111,4 @@ unsafeWindow.addEventListener('load', function main() {
     sync.process(sender, chassisServer);
     striker.process(strikerComponent, strikerServer, turret, turretServer, 
         strikerShells, weaponTrigger, strikerLocking, sender);
-});
+})();
