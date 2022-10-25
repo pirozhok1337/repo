@@ -29,17 +29,17 @@ function getNote() {
 // @author       ${pjson().author}
 // @match        https://*.test-eu.tankionline.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=tankionline.com
-    
+
 // @require      https://raw.githubusercontent.com/flyover/imgui-js/master/dist/imgui.umd.js
 // @require      https://raw.githubusercontent.com/flyover/imgui-js/master/dist/imgui_impl.umd.js
-    
+
 // @downloadURL  https://raw.githubusercontent.com/${pjson().author}/${pjson().name}/main/release/${pjson().name}.user.js
 // @updateURL    https://raw.githubusercontent.com/${pjson().author}/${pjson().name}/main/release/${pjson().name}.meta.js
-    
+
 // @run-at       document-start
 // @grant        GM_xmlhttpRequest
 // @grant        unsafeWindow
-    
+
 // ==/UserScript==`
 }
 

@@ -61,19 +61,35 @@ menu.tabs.push({
                 ImGui.SetCursorPosX(ImGui.GetCursorPosX() + 45);
                 ImGui.InputInt('Height', cImGui.access(cfg.antiMineData, 'height'), 10, 10);
             }
-            
-            return;
 
-            ImGui.ShowHelpMarker('Controls the state of the server');
+            cImGui.ShowHelpMarker('Position sending interval to the server');
             ImGui.SameLine();
-            ImGui.Checkbox('Anti-Crash (Experimental)', ImGui.access(PacketsControl, 'antiCrash'));
-
-            if (PacketsControl.antiCrash) {
-                ImGui.SetCursorPosX(ImGui.GetCursorPosX() + 45);
-                ImGui.InputInt('Delay', ImGui.access(PacketsControl, 'delay'), 10, 10);
-
-                if (PacketsControl.delay < 10) PacketsControl.delay = 10;
+            ImGui.PushItemWidth(160);
+            ImGui.InputInt('Update interval', cImGui.access(cfg, 'updateInterval'), 10);
+            ImGui.PopItemWidth();
+    
+            if (cfg.updateInterval < 70 && cfg.warning !== true) {
+                let io = ImGui.GetIO();
+    
+                ImGui.SetNextWindowSize(cImGui.ImVec2(0, 0));
+    
+                ImGui.SetNextWindowPos(cImGui.ImVec2(io.DisplaySize.x * 0.5, io.DisplaySize.y * 0.5), 
+                    ImGui.Cond.Always, cImGui.ImVec2(0.5, 0.5));
+    
+                ImGui.SetNextWindowFocus();
+    
+                ImGui.Begin('WARNING', null, ImGui.WindowFlags.NoCollapse | ImGui.WindowFlags.NoResize);
+    
+                ImGui.Text('It is not recommended to select a value\nlessthan 70 ms, it may cause a crash.');
+    
+                if (ImGui.Button('OK', cImGui.ImVec2(303, 30)))
+                    cfg.warning = true;
+    
+                ImGui.End();
             }
+    
+            cfg.updateInterval < 10 && (cfg.updateInterval = 10);
+            cfg.updateInterval > 150 && (cfg.updateInterval = 150);
         }, 'Sync');
 
         ImGui.SameLine();
@@ -128,41 +144,6 @@ menu.tabs.push({
             cImGui.ShowHelpMarker('Disabling tank collision');
             ImGui.SameLine();
             ImGui.Checkbox('No collision', cImGui.access(config.data.otherData, 'noCollision'));
-    
-            cImGui.ShowHelpMarker('Fast sending of data to the server');
-            ImGui.SameLine();
-            ImGui.Checkbox('Rapid Update', cImGui.access(config.data.otherData.rapidUpdateData, 'state'));
-    
-            if (config.data.otherData.rapidUpdateData.state) {
-                let cfg = config.data.otherData.rapidUpdateData;
-    
-                ImGui.SetCursorPosX(ImGui.GetCursorPosX() + 45);
-                
-                ImGui.InputInt('Delay##cwwh', cImGui.access(cfg, 'delay'), 10);
-    
-                if (cfg.delay < 50 && cfg.warning !== true) {
-                    let io = ImGui.GetIO();
-    
-                    ImGui.SetNextWindowSize(cImGui.ImVec2(0, 0));
-    
-                    ImGui.SetNextWindowPos(cImGui.ImVec2(io.DisplaySize.x * 0.5, io.DisplaySize.y * 0.5), 
-                        ImGui.Cond.Always, cImGui.ImVec2(0.5, 0.5));
-    
-                    ImGui.SetNextWindowFocus();
-    
-                    ImGui.Begin('WARNING', null, ImGui.WindowFlags.NoCollapse | ImGui.WindowFlags.NoResize);
-    
-                    ImGui.Text('It is not recommended to select a value\nlessthan 50 ms, it may cause a crash.');
-    
-                    if (ImGui.Button('OK', cImGui.ImVec2(303, 30))) {
-                        cfg.warning = true;
-                    }
-    
-                    ImGui.End();
-                }
-    
-                config.data.otherData.rapidUpdateData.delay < 10 && (config.data.otherData.rapidUpdateData.delay = 10);
-            }
         }, 'Other');
     }
 })

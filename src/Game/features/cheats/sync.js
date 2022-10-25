@@ -1,5 +1,4 @@
-import { config, utils, sync, gameObjects, packetControl } from '../../../index.js';
-import { KillZonesFlags } from '../../../Shared/utils.js';
+import { config, utils, sync, gameObjects } from '../../../index.js';
 
 export default class Sync {
     #initialized = false;
@@ -14,9 +13,12 @@ export default class Sync {
     #nextTime = 0;
     #config = config.data.syncData;
     skip = false;
+    forceSkip = false;
     isRandomTPEnabled = false;
 
     reset = () => {
+        this.forceSkip = false;
+        this.skip = false;
         this.#initialized = false;
         this.#nextTime = 0;
     }
@@ -34,18 +36,20 @@ export default class Sync {
         if (typeof health === 'number' && health !== 0) {
             let result = utils.isNotKillZone(state.position);
 
-            if (result !== KillZonesFlags.None)
+            if (result !== 0)
                 utils.outKillZone(state.position, result);
 
-            if (this.#lastSendState) {
-                if (state.position.distance_ry1qwf$(this.#lastSendState.position) < 300 && 
-                        this.compareOrientation(state))
+            if (gameObjects.localTank['StrikerWeapon'] && !this.skip && !this.forceSkip) {
+                if (state.position.distance_ry1qwf$(this.#lastSendState.position) < 500)
+                    return;
+            } else {
+                if (state.position.distance_ry1qwf$(this.#lastSendState.position) < 500 && this.compareOrientation(state))
                     return;
             }
 
             this.#lastSendState.position = state.position.clone();
             this.#lastSendState.orientation = state.orientation.clone();
-
+        
             sender.sendUpdate_0(state, sender.world.physicsTime);
         }
     }
@@ -78,10 +82,8 @@ export default class Sync {
         utils.isBindPressed(this.#config.antiMineData) && 
             (this.#config.antiMineData.state = !this.#config.antiMineData.state);
 
-        if (sender && config.data.otherData.rapidUpdateData.state && 
-            sender.world.physicsTime > this.#nextTime && this.#initialized) 
-        {
-            this.#nextTime = sender.world.physicsTime + config.data.otherData.rapidUpdateData.delay;
+        if (sender && this.#initialized && !this.skip && !this.forceSkip && sender.world.physicsTime > this.#nextTime) {
+            this.#nextTime = sender.world.physicsTime + this.#config.updateInterval;
             sender.sendState_0(sender.tankPhysicsComponent_0.getInterpolatedBodyState());
         }
 
@@ -90,20 +92,18 @@ export default class Sync {
 
         this.#initialized = true;
 
-        sender.runAfterPhysicsUpdate = sender.runAfterPhysicsUpdate_mx4ult$;
-
-        sender.runAfterPhysicsUpdate_mx4ult$ = function (t) {
-            if (config.data.otherData.rapidUpdateData.state) 
-                return;
-
-            return this.runAfterPhysicsUpdate(t);
+        sender.runAfterPhysicsUpdate_mx4ult$ = function () {
+            return;
         }
 
         chassisServer.serverInterface_0.sendChassisControl_t8q23h$ = function () {}
 
         sender.__proto__.sendState_0 = function(t) {
-            if (sync.skip || (t.position && t.position.x === 0 && t.position.y === 0 && t.position.z === 0))
+            if (sync.forceSkip || (t.position && t.position.x === 0 && t.position.y === 0 && t.position.z === 0))
                 return;
+
+            if (sync.skip)
+                return sync.sendUpdate(this, t);
 
             sync.#config.antiMineData.state && (t.position.z += sync.#config.antiMineData.height);
 

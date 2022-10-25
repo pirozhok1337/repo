@@ -125,15 +125,12 @@ export default class Config {
             speedHack: false,
             freezeTanks: false,
             noCollision: false,
-            rapidUpdateData: {
-                state: false,
-                delay: 150,
-                warning: false
-            },
             showAlert: true
         },
         syncData: {
-            ID: '0',
+            ID: '1',
+            updateInterval: 70,
+            warning: false,
             antiStrikerData: {
                 state: false,
                 type: 'Enemy',

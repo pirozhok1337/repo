@@ -125,6 +125,10 @@ export default class Striker {
         this.rocketTP.index++;
     }
 
+    isTeleportToTarget = () => {
+        return this.#config.shellsTeleportData.state && this.rocketTP.teleportToTarget;
+    }
+
     process = (strikerComponent, strikerServer, turret, turretServer,
                 strikerShells, weaponTrigger, strikerLocking, sender) => 
     {
@@ -162,22 +166,23 @@ export default class Striker {
         sectorsCalculator.maxElevationAngle_0 = Infinity;
         sectorsCalculator.minElevationAngle_0 = -Infinity;
 
-        strikerLocking.sendState = strikerLocking.tick_i15cpw$;
+        strikerComponent.singleShot = strikerComponent.doSingleShot;
+        strikerComponent.shootGuidedRocket = strikerComponent.shootGuidedRocket_70obpu$;
 
-        strikerLocking.tick_i15cpw$ = function (t, e, n, o) {
-            turretServer.sendUpdate_0(true);
+        strikerComponent.doSingleShot = function () {
+            const teleportToTarget = striker.isTeleportToTarget();
 
-            if (sync.isRandomTPEnabled) {
-                sync.skip = true;
-                sync.sendUpdate(sender, sender.tankPhysicsComponent_0.getInterpolatedBodyState());
-            }
+            teleportToTarget ? (sync.forceSkip = true) : (sync.skip = true);
+            this.singleShot();
+            teleportToTarget ? (sync.forceSkip = false) : (sync.skip = false);
+        }
 
-            this.sendState(t, e, n, o);
-            sync.skip = false;
-            
-            if (sync.isRandomTPEnabled && !config.data.otherData.rapidUpdateData.state) {
-                sender.sendState_0(sender.tankPhysicsComponent_0.getInterpolatedBodyState());
-            }
+        strikerComponent.shootGuidedRocket_70obpu$ = function (t, e) {
+            const teleportToTarget = striker.isTeleportToTarget();
+
+            teleportToTarget ? (sync.forceSkip = true) : (sync.skip = true);
+            this.shootGuidedRocket(t, e);
+            teleportToTarget ? (sync.forceSkip = false) : (sync.skip = false);
         }
 
         turretServer.sendUpdate_0 = function (t) {
@@ -199,7 +204,9 @@ export default class Striker {
             if (striker.#config.getTargetForAimWithScope.state && e) striker.aimBotTarget      = e;
             if (striker.#config.getTargetForTPWithScope.state  && e) striker.rocketTP.target    = e;
 
+            sync.skip = true;
             let result = this.lockTarget_gcez93$$default(t, e);
+            sync.skip = false;
 
             striker.#config.aimBotData.state && striker.aimBotTarget && 
                 utils.isBindPressed(striker.#config.aimBotData) !== true && 
@@ -209,37 +216,29 @@ export default class Striker {
         }
 
         strikerServer.__proto__.createShell_0 = function (t) {
-            if (striker.#config.shellsTeleportData.state)
-                t.direction.init_y2kzbl$(0, 0, 0);
-
-            turretServer.sendUpdate_0(true);
-
-            if (sync.isRandomTPEnabled && !striker.rocketTP.teleportToTarget) {
-                sync.skip = true;
-                sync.sendUpdate(sender, sender.tankPhysicsComponent_0.getInterpolatedBodyState());
-            } else if (striker.rocketTP.teleportToTarget) {
-                sync.skip = true;
-
-                const state = sender.tankPhysicsComponent_0.getInterpolatedBodyState();
-
+            if (striker.#config.shellsTeleportData.state) {
                 const target = utils.getTankById(striker.rocketTP.target),
                     targetState = target?.['TankPhysicsComponent']?.body?.state;
 
-                if (targetState) {
+                if (!targetState) 
+                    return strikerComponent.explodeRockets();
+                    
+                t.direction.init_y2kzbl$(0, 0, 0);
+
+                if (striker.rocketTP.teleportToTarget) {
+                    const state = sender.tankPhysicsComponent_0.getInterpolatedBodyState();
+
                     state.position.x = targetState.position.x;
                     state.position.y = targetState.position.y;
                     state.position.z = targetState.position.z + 100;
-                } 
 
-                sync.sendUpdate(sender, state);
+                    sync.sendUpdate(sender, state);
+                }
             }
+
+            turretServer.sendUpdate_0(true);
 
             this.shellCommunicationServer_0.tryToShoot_595qrd$(this.world.physicsTime, 0, t.shellId, t.direction);
-            sync.skip = false;
-
-            if (sync.isRandomTPEnabled && !config.data.otherData.rapidUpdateData.state) {
-                sender.sendState_0(sender.tankPhysicsComponent_0.getInterpolatedBodyState());
-            }
         }
 
         strikerServer.__proto__.createGuidedRocket_0 = strikerServer.__proto__.createShell_0;

@@ -27,7 +27,7 @@ menu.tabs.push({
                 ImGui.Checkbox('No collision shells (Experimental)', cImGui.access(striker.rocketTP, 'teleportToTarget'));
             }
     
-            cImGui.ShowHelpMarker('If you want to change the target, but the ambot does not let you do so, press the [N] key.');
+            cImGui.ShowHelpMarker('If you want to change the target, but the aimbot does not let you do so, press the [N] key.');
             ImGui.SameLine();
             ImGui.Checkbox('Aimbot', cImGui.access(config.data.weaponData.strikerData.aimBotData, 'state'));
         }, 'Striker');

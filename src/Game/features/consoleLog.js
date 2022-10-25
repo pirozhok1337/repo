@@ -56,8 +56,8 @@ export default class ConsoleLog {
                 destroyedName = consoleLog.getName(t.destroyedUserLabelData);
 
             console.log(`${consoleLog.getTime()} - %c${killerName} %cdestroyed %c${destroyedName} %cwith an %c${t.damageType.name}`,
-                consoleLog.getColor(t.killerUserLabelData), 'color: white;',
-                consoleLog.getColor(t.destroyedUserLabelData), 'color: white;',
+                consoleLog.getColor(t.killerUserLabelData), '',
+                consoleLog.getColor(t.destroyedUserLabelData), '',
                 'color: red;');
 
             return this.killed(t);
