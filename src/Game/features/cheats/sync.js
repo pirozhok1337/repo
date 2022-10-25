@@ -70,7 +70,7 @@ export default class Sync {
 
     process = (sender, chassisServer) => {
         utils.isBindPressed(this.#config.antiStrikerData) && 
-            (config.antiStrikerData.state = !this.#config.antiStrikerData.state);
+            (this.#config.antiStrikerData.state = !this.#config.antiStrikerData.state);
 
         utils.isBindPressed(this.#config.randomTeleportData) && 
             (this.#config.randomTeleportData.state = !this.#config.randomTeleportData.state);

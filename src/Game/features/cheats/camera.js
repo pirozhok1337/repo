@@ -60,6 +60,10 @@ export default class Camera {
         camera.elevation_0.copy       = camera.elevation_0.update_dleff0$;
         camera.pivot_0.copy           = camera.pivot_0.update_sl07mc$;
 
+        camera.getCollisionTime_0 = function () {
+            return 1;
+        }
+
         camera.polarDistance_0.update_dleff0$ = function (t, e) {
             if (cameraHack.#config.state === false) 
                 return this.copy(t, e);
