@@ -205,6 +205,7 @@ export default class Striker {
             if (striker.#config.getTargetForTPWithScope.state  && e) striker.rocketTP.target    = e;
 
             sync.skip = true;
+            turretServer.sendUpdate_0(true);
             let result = this.lockTarget_gcez93$$default(t, e);
             sync.skip = false;
 
@@ -237,7 +238,6 @@ export default class Striker {
             }
 
             turretServer.sendUpdate_0(true);
-
             this.shellCommunicationServer_0.tryToShoot_595qrd$(this.world.physicsTime, 0, t.shellId, t.direction);
         }
 

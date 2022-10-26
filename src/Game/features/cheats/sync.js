@@ -30,6 +30,28 @@ export default class Sync {
             +state.orientation.w.toFixed(2) === +this.#lastSendState.orientation.w.toFixed(2));
     }
 
+    isRocketsExist = onlyEnemy => {
+        let tanks = utils.getTanks(onlyEnemy),
+            state = false;
+
+        if (!utils.isArrayValid(tanks))
+            return;
+
+        for (const tank of tanks) {
+            let shells = tank['StrikerRocketFactory']?.shellCache_0?.itemsInUse?.toArray();
+
+            if (utils.isArrayValid(shells)) {
+                for (const shell of shells) {
+                    shell.components_0.array[1].direction.init_y2kzbl$(0, 0, 0);
+                }
+
+                state = true;
+            }
+        }
+
+        return state;
+    }
+
     sendUpdate = (sender, state) => {
         let health = gameObjects.localTank?.['HealthComponent']?.health;
 
@@ -39,11 +61,16 @@ export default class Sync {
             if (result !== 0)
                 utils.outKillZone(state.position, result);
 
+            let distance = this.isRocketsExist(true) ? 500 : 3000;
+
+            if (this.skip || this.forceSkip)
+                distance = 500;
+
             if (gameObjects.localTank['StrikerWeapon'] && !this.skip && !this.forceSkip) {
-                if (state.position.distance_ry1qwf$(this.#lastSendState.position) < 500)
+                if (state.position.distance_ry1qwf$(this.#lastSendState.position) < distance)
                     return;
             } else {
-                if (state.position.distance_ry1qwf$(this.#lastSendState.position) < 500 && this.compareOrientation(state))
+                if (state.position.distance_ry1qwf$(this.#lastSendState.position) < distance && this.compareOrientation(state))
                     return;
             }
 
@@ -109,27 +136,8 @@ export default class Sync {
 
             sync.isRandomTPEnabled = false;
 
-            if (sync.#config.antiStrikerData.state) {
-                let tanks = utils.getTanks(sync.#config.antiStrikerData.type === 'Enemy'),
-                    state = false;
-
-                if (!utils.isArrayValid(tanks))
-                    return;
-
-                for (const tank of tanks) {
-                    let shells = tank['StrikerRocketFactory']?.shellCache_0?.itemsInUse?.toArray();
-
-                    if (utils.isArrayValid(shells)) {
-                        for (const shell of shells) {
-                            shell.components_0.array[1].direction.init_y2kzbl$(0, 0, 0);
-                        }
-
-                        state = true;
-                    }
-                }
-
-                state && sync.randomPosition(t);
-            }
+            if (sync.#config.antiStrikerData.state)
+                sync.isRocketsExist(sync.#config.antiStrikerData.type === 'Enemy') && sync.randomPosition(t);
 
             sync.#config.randomTeleportData.state && sync.randomPosition(t);
 
