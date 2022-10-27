@@ -2,8 +2,11 @@ import wsHook from '../../Shared/wsHook.js';
 import { packetControl } from '../../index.js';
 
 export default class PacketControl {
-    serverState = true;
     packetCounter = 0;
+    lastResponseTime = new Date().getTime();
+    get responseTime() {
+        return new Date().getTime() - this.lastResponseTime;
+    }
 }
 
 setInterval(() => {
@@ -21,9 +24,11 @@ setInterval(() => {
     const pps = document.getElementById('pps'),
         counter = packetControl.packetCounter;
 
-    counter >= 30 && counter <= 70 && (pps.style.color = 'rgb(255, 188, 9)');
-    counter < 30 && (pps.style.color = 'rgb(116, 186, 61)');
-    counter > 70 && (pps.style.color = 'rgb(255, 82, 9)');
+    counter <= 10 && (pps.style.color = 'rgb(14, 157, 240)'); // отлично
+    counter > 10 && counter < 30 && (pps.style.color = 'rgb(116, 186, 61)'); // так себе
+    counter >= 30 && counter <= 70 && (pps.style.color = 'rgb(255, 188, 9)'); // хуево
+    counter > 70 && (pps.style.color = 'rgb(255, 82, 9)'); // все пизда
+
 
     pps.textContent = counter.toString();
     packetControl.packetCounter = 0;
@@ -33,13 +38,10 @@ wsHook.before = function() {
     packetControl.packetCounter++;
 }
 
-let timeout = undefined;
-
 wsHook.after = function (e, url, wsObject) {
-    packetControl.serverState = true;
+    if (packetControl.responseTime < 5)
+        return e;
 
-    clearTimeout(timeout);
-    timeout = setTimeout(() => packetControl.serverState = false, 30);
-
+    packetControl.lastResponseTime = new Date().getTime();
     return e;
 }

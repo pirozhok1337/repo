@@ -1,4 +1,4 @@
-import { config, utils, sync, gameObjects } from '../../../index.js';
+import { config, utils, sync, gameObjects, packetControl } from '../../../index.js';
 
 export default class Sync {
     #initialized = false;
@@ -53,6 +53,9 @@ export default class Sync {
     }
 
     sendUpdate = (sender, state) => {
+        if (packetControl.responseTime >= 2500)
+            return;
+
         let health = gameObjects.localTank?.['HealthComponent']?.health;
 
         if (typeof health === 'number' && health !== 0) {

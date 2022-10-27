@@ -40,9 +40,8 @@ export default class Clicker {
         const state = gameObjects.localTank?.['TankPhysicsComponent'].body?.state;
 
         if (state?.position && state.position.x !== 0 && state.position.y !== 0 && state.position.z !== 0) {
-            if (gameObjects.localTank?.['HealthComponent']?.health !== 0 && packetControl.serverState) {
+            if (gameObjects.localTank?.['HealthComponent']?.health !== 0 && packetControl.responseTime <= 30)
                 this.getSupplyByName(name)?.onUserActivatedSupply();
-            }
         }
     }
 
@@ -50,18 +49,20 @@ export default class Clicker {
         if (!this.#supplies)
             return;
 
+        if (this.#config.autoHealingData.state || this.temp !== false) {
+            if (!this.#timeout) {
+                this.#timeout = setTimeout(() => {
+                    this.activateSupply('FIRST_AID');
+                    this.activateSupply('MINE');
+                    this.#timeout = undefined;
+                }, this.#config.autoHealingData.delay);
+            }
+
+            return;
+        }
+
         if (this.#config.autoMiningData.state)
             this.activateSupply('MINE');
-
-        if (!this.#config.autoHealingData.state && this.temp === false) return;
-
-        if (!this.#timeout) {
-            this.#timeout = setTimeout(() => {
-                this.activateSupply('FIRST_AID');
-                this.activateSupply('MINE');
-                this.#timeout = undefined;
-            }, this.#config.autoHealingData.delay);
-        }
     };
 
     suppliesLowPriority = () => {
