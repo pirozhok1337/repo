@@ -15,12 +15,14 @@ export default class Sync {
     skip = false;
     forceSkip = false;
     isRandomTPEnabled = false;
+    antiKickNextTime = 0;
 
     reset = () => {
         this.forceSkip = false;
         this.skip = false;
         this.#initialized = false;
         this.#nextTime = 0;
+        this.antiKickNextTime = 0;
     }
 
     compareOrientation = state => {
@@ -64,16 +66,11 @@ export default class Sync {
             if (result !== 0)
                 utils.outKillZone(state.position, result);
 
-            let distance = this.isRocketsExist(true) ? 500 : 3000;
-
-            if (this.skip || this.forceSkip)
-                distance = 500;
-
             if (gameObjects.localTank['StrikerWeapon'] && !this.skip && !this.forceSkip) {
-                if (state.position.distance_ry1qwf$(this.#lastSendState.position) < distance)
+                if (state.position.distance_ry1qwf$(this.#lastSendState.position) < 300)
                     return;
             } else {
-                if (state.position.distance_ry1qwf$(this.#lastSendState.position) < distance && this.compareOrientation(state))
+                if (state.position.distance_ry1qwf$(this.#lastSendState.position) < 300 && this.compareOrientation(state))
                     return;
             }
 
@@ -126,7 +123,13 @@ export default class Sync {
             return;
         }
 
-        chassisServer.serverInterface_0.sendChassisControl_t8q23h$ = function () {}
+        chassisServer.serverInterface_0.sendChassisControl = chassisServer.serverInterface_0.sendChassisControl_t8q23h$;
+        chassisServer.serverInterface_0.sendChassisControl_t8q23h$ = function (t, e) {
+            if (sender.world.physicsTime < sync.antiKickNextTime) return;
+            sync.antiKickNextTime = sender.world.physicsTime + 3000;
+            e.turnLeftSpeed = 400;
+            this.sendChassisControl(t, e);
+        }
 
         sender.__proto__.sendState_0 = function(t) {
             if (sync.forceSkip || (t.position && t.position.x === 0 && t.position.y === 0 && t.position.z === 0))

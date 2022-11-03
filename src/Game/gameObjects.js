@@ -10,7 +10,12 @@ export default class GameObjects {
         if (this.#root)
             return this.#root;
 
-        return this.#root = root?._reactRootContainer?._internalRoot?.current?.memoizedState?.
+        const root = document.getElementById('root');
+
+        if (!root)
+            return;
+
+        return this.#root = root._reactRootContainer?._internalRoot?.current?.memoizedState?.
             element?.type?.prototype?.store;
     }
 
