@@ -185,10 +185,11 @@ export default class Config {
             }
         },
         clickerData: {
-            ID: '0',
+            ID: '1',
             autoHealingData: {
                 state: false,
-                delay: 10,
+                delay: 30,
+                multiply: 1,
                 bind: {
                     keys: [],
                     pressed: false,
@@ -221,6 +222,8 @@ export default class Config {
             },
             autoMiningData: {
                 state: false,
+                delay: 30,
+                multiply: 1,
                 bind: {
                     keys: [],
                     pressed: false,

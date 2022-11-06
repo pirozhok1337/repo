@@ -3,7 +3,6 @@ import { config, utils, packetControl, gameObjects } from '../../../index.js';
 export default class Clicker {
     #config = config.data.clickerData;
     #supplies;
-    #timeout;
     temp = false;
 
     constructor() {
@@ -14,14 +13,13 @@ export default class Clicker {
     reset = () => {
         this.temp = false;
         this.#supplies = undefined;
-        this.#timeout = undefined;
     }
 
     getSupplyByName = name => {
         return this.#supplies.get_11rb$(this.#supplies.head_1lr44l$_0?.key.constructor[name]);
     }
 
-    activateSupply = (name, low = false) => {
+    activateSupply = (name, low, time = 30) => {
         if (low) {
             let actions = Array.from(gameObjects.world?.inputManager?.input?.gameActions_0?.map);
 
@@ -40,7 +38,7 @@ export default class Clicker {
         const state = gameObjects.localTank?.['TankPhysicsComponent'].body?.state;
 
         if (state?.position && state.position.x !== 0 && state.position.y !== 0 && state.position.z !== 0) {
-            if (gameObjects.localTank?.['HealthComponent']?.health !== 0 && packetControl.responseTime <= 30)
+            if (gameObjects.localTank?.['HealthComponent']?.health !== 0 && packetControl.responseTime <= time)
                 this.getSupplyByName(name)?.onUserActivatedSupply();
         }
     }
@@ -50,19 +48,16 @@ export default class Clicker {
             return;
 
         if (this.#config.autoHealingData.state || this.temp !== false) {
-            if (!this.#timeout) {
-                this.#timeout = setTimeout(() => {
-                    this.activateSupply('FIRST_AID');
-                    this.activateSupply('MINE');
-                    this.#timeout = undefined;
-                }, this.#config.autoHealingData.delay);
+            for (let i = 0; i < this.#config.autoHealingData.multiply; i++) {
+                this.activateSupply('FIRST_AID', false, this.#config.autoHealingData.delay);
             }
-
-            return;
         }
 
-        if (this.#config.autoMiningData.state)
-            this.activateSupply('MINE');
+        if (this.#config.autoMiningData.state || this.temp !== false) {
+            for (let i = 0; i < this.#config.autoMiningData.multiply; i++) {
+                this.activateSupply('MINE', false, this.#config.autoMiningData.delay);
+            }
+        }
     };
 
     suppliesLowPriority = () => {

@@ -6,7 +6,7 @@ export default class StoreOpener {
 
         if (!shop.enabled) {
             shop.enabled = true;
-            console.log(`[SHIZOVAL] ${new Date().toJSON().slice(11, 19)} - The store is open`);
+            console.log(`[SHIZOVAL] The store is open`);
         }
     }
 }

@@ -3,7 +3,7 @@ import { config, menu, cImGui } from '../../index.js';
 menu.tabs.push({
     label: 'Local tank',
     process: () => {
-        cImGui.createChild('##crgtj', cImGui.ImVec2(339, 200), () => {
+        cImGui.createChild('##crgtj', cImGui.ImVec2(339, 250), () => {
             let cfg = config.data.airBreakData;
 
             ImGui.SliderInt('Speed##kyxu', cImGui.access(cfg.speedData, 'state'), 1, 1000);
@@ -32,7 +32,7 @@ menu.tabs.push({
 
         ImGui.SameLine();
 
-        cImGui.createChild('##8757', cImGui.ImVec2(339, 200), () => {
+        cImGui.createChild('##8757', cImGui.ImVec2(339, 250), () => {
             let cfg = config.data.syncData;
             
             cImGui.ShowHelpMarker('If someone shoots with a striker, the anti-aim will automatically turn on');
@@ -94,19 +94,27 @@ menu.tabs.push({
 
         ImGui.SameLine();
 
-        cImGui.createChild('##53jbk', cImGui.ImVec2(0, 200), () => {
+        cImGui.createChild('##53jbk', cImGui.ImVec2(0, 250), () => {
             let cfg = config.data.clickerData;
             ImGui.Checkbox('Armor', cImGui.access(cfg.autoArmorData, 'state'));
             ImGui.Checkbox('Damage', cImGui.access(cfg.autoDamageData, 'state'));
             ImGui.Checkbox('Nitro', cImGui.access(cfg.autoNitroData, 'state'));
             ImGui.Checkbox('Mine', cImGui.access(cfg.autoMiningData, 'state'));
+
+            if (cfg.autoMiningData.state) {
+                ImGui.SetCursorPosX(ImGui.GetCursorPosX() + 15);
+                ImGui.SliderInt('Delay##oer3', cImGui.access(cfg.autoMiningData, 'delay'), 5, 50);
+                ImGui.SetCursorPosX(ImGui.GetCursorPosX() + 15);
+                ImGui.SliderInt('Multiply##zxaq1', cImGui.access(cfg.autoMiningData, 'multiply'), 1, 10);
+            }
+
             ImGui.Checkbox('Healing', cImGui.access(cfg.autoHealingData, 'state'));
 
             if (cfg.autoHealingData.state) {
                 ImGui.SetCursorPosX(ImGui.GetCursorPosX() + 15);
-                ImGui.InputInt('Delay##jypy', cImGui.access(cfg.autoHealingData, 'delay'), 10);
-
-                cfg.autoHealingData.delay < 0 && (cfg.autoHealingData.delay = 0);
+                ImGui.SliderInt('Delay##jypy', cImGui.access(cfg.autoHealingData, 'delay'), 5, 50);
+                ImGui.SetCursorPosX(ImGui.GetCursorPosX() + 15);
+                ImGui.SliderInt('Multiply##it401', cImGui.access(cfg.autoHealingData, 'multiply'), 1, 10);
             }
         }, 'Clicker');
 
