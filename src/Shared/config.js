@@ -120,12 +120,13 @@ export default class Config {
             mply: 1
         },
         otherData: {
-            ID: '1',
+            ID: '2',
             autoHealingClicker: false,
             speedHack: false,
             freezeTanks: false,
             noCollision: false,
-            showAlert: true
+            showAlert: true,
+            autoShot: false
         },
         syncData: {
             ID: '1',

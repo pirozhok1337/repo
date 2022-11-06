@@ -81,10 +81,19 @@ export default class Other {
         this.#config.noCollision ? physics.setDeadPhantomState_0() : physics.setFullyInteractableState_0();
     }
 
-    process = (physics, health, speed) => {
+    autoShot = weaponTrigger => {
+        if (!weaponTrigger)
+            return;
+
+        if (this.#config.autoShot)
+            weaponTrigger.pulled_0 = true;
+    }
+
+    process = (physics, health, speed, weaponTrigger) => {
         this.bodyParser();
         this.noCollision(physics);
         this.autoLowHPClicker(health);
         this.speedHack(speed?.maxSpeedSmoohter_0?.smoother);
+        this.autoShot(weaponTrigger);
     }
 }

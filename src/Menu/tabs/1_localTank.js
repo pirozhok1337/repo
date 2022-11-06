@@ -108,7 +108,7 @@ menu.tabs.push({
                 ImGui.SliderInt('Multiply##zxaq1', cImGui.access(cfg.autoMiningData, 'multiply'), 1, 10);
             }
 
-            ImGui.Checkbox('Healing', cImGui.access(cfg.autoHealingData, 'state'));
+            ImGui.Checkbox('First aid kit', cImGui.access(cfg.autoHealingData, 'state'));
 
             if (cfg.autoHealingData.state) {
                 ImGui.SetCursorPosX(ImGui.GetCursorPosX() + 15);
@@ -152,6 +152,10 @@ menu.tabs.push({
             cImGui.ShowHelpMarker('Disabling tank collision');
             ImGui.SameLine();
             ImGui.Checkbox('No collision', cImGui.access(config.data.otherData, 'noCollision'));
+
+            cImGui.ShowHelpMarker('.');
+            ImGui.SameLine();
+            ImGui.Checkbox('Automatic shooting', cImGui.access(config.data.otherData, 'autoShot'));
         }, 'Other');
     }
 })

@@ -96,7 +96,7 @@ if (GM_info.script.version !== pjson.version)
         return gameObjects.reset(), resets();
 
     removeMines.process(mines);
-    other.process(tankPhysics, health, speed);
+    other.process(tankPhysics, health, speed, weaponTrigger);
     consoleLog.process(chat, action);
     wallhack.process();
     filters.process();
