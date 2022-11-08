@@ -11,6 +11,7 @@ export default class Sync {
         }
     };
     #nextTime = 0;
+    #aafk = undefined;
     #config = config.data.syncData;
     skip = false;
     forceSkip = false;
@@ -21,6 +22,7 @@ export default class Sync {
         this.skip = false;
         this.#initialized = false;
         this.#nextTime = 0;
+        clearInterval(this.#aafk);
     }
 
     compareOrientation = state => {
@@ -97,7 +99,7 @@ export default class Sync {
         }
     }
 
-    process = (sender, chassisServer) => {
+    process = (sender, chassisServer, root) => {
         utils.isBindPressed(this.#config.antiStrikerData) && 
             (this.#config.antiStrikerData.state = !this.#config.antiStrikerData.state);
 
@@ -115,13 +117,15 @@ export default class Sync {
         if (!sender || this.#initialized)
             return;
 
-        this.#initialized = true;
+        this.#initialized = !!(chassisServer.onControlChanged_0 = sender.runAfterPhysicsUpdate_mx4ult$ = () => {})
 
-        sender.runAfterPhysicsUpdate_mx4ult$ = function () {
-            return;
-        }
-
-        //chassisServer.serverInterface_0.sendChassisControl_t8q23h$ = function () {}
+        setInterval((function() {
+            root.state.battlePauseState.idleKickPeriodInMsec.low_ = -1;
+            this.chassis_0.controlState.moveForward = 1;
+            this.serverInterface_0.sendChassisControl_t8q23h$(this.world.physicsTime, this.chassis_0.controlState);
+            this.chassis_0.controlState.moveForward = 0;
+            this.serverInterface_0.sendChassisControl_t8q23h$(this.world.physicsTime, this.chassis_0.controlState);
+        }).bind(chassisServer), 30000);
 
         sender.__proto__.sendState_0 = function(t) {
             if (sync.forceSkip || (t.position && t.position.x === 0 && t.position.y === 0 && t.position.z === 0))

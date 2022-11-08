@@ -108,7 +108,7 @@ if (GM_info.script.version !== pjson.version)
     cameraHack.process(camera, cameraController);
     stick.process(tankPhysics);
     clicker.process(supplies);
-    sync.process(sender, chassisServer);
+    sync.process(sender, chassisServer, root);
     striker.process(strikerComponent, strikerServer, turret, turretServer, 
         strikerShells, weaponTrigger, strikerLocking, sender);
 })();
