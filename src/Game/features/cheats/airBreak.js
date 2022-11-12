@@ -1,18 +1,26 @@
 import { KillZonesFlags } from '../../../Shared/utils.js';
 import { utils, config } from '../../../index.js';
 
+const __filename = 'src/Game/features/cheats/airBreak.js';
+
 export default class AirBreak {
     #config = config.data.airBreakData;
     #state = false;
     #position = { x: 0, y: 0, z: 0 };
+    #initialized = false;
 
     get state() {
         return this.#state;
     }
 
     clearVelocity = body => {
-        body.state.velocity.init_y2kzbl$();
-        body.state.angularVelocity.init_y2kzbl$();
+        const velocityInit = utils.match(body.state.velocity, 'init_')?.[0],
+            angularVelocityInit = utils.match(body.state.angularVelocity, 'init_')?.[0];
+
+        if (typeof velocityInit !== 'function' || typeof angularVelocityInit !== 'function')
+            return utils.debug(__filename, 20, 'AirBreak::clearVelocity', `velocityInit (expected function, type: ${typeof velocityInit}) or angularVelocityInit (expected function, type ${typeof angularVelocityInit}) invalid`);
+        
+        velocityInit(), angularVelocityInit();
     }
 
     setAirBreakPosition = position => {
@@ -41,7 +49,10 @@ export default class AirBreak {
     }
 
     setRayLenght = (chassis, value) => {
-        chassis && (chassis.params_0.maxRayLength = value);
+        if (!chassis)
+            return utils.debug(__filename, 52, 'AirBreak::setRayLenght', 'chassis (expected TrackedChassis) invalid'); 
+
+        chassis.params_0.maxRayLength = value;
     }
 
     align = (body, direction) => {
@@ -217,18 +228,27 @@ export default class AirBreak {
 
     reset = () => this.#state = false;
 
-    process = (physics, camera, chassis) => {
-        if (!physics || !camera)
+    process = (physics, camera, chassis, sender) => {
+        if (this.#initialized)
             return;
 
-        utils.isBindPressed(this.#config.toggleStateData) && this.toggleState(physics);
+        if (!physics || !camera)
+            return utils.debug(__filename, 235, 'AirBreak::process', `physics (expected TankPhysicsComponent, type: ${typeof physics}) or camera (expected FollowCamera, type: ${typeof camera}) invalid`);
 
-        if (this.#state !== true) return this.setRayLenght(chassis, 50);
+        this.#initialized = true;
 
-        this.keyHandler(camera.currState_0.direction),
-        this.alignTank(physics, camera.currState_0.direction), 
-        this.setPosition(physics), 
-        physics.body.movable = (this.#config.typeData.state === 'airWalk'),
-        this.#config.typeData.state === 'airWalk' && this.setRayLenght(chassis, 1e+100);
+        const runAfterPhysicsUpdate = utils.match(sender, 'runAfterPhysicsUpdate_', 'function', true);
+
+        runAfterPhysicsUpdate ? sender[runAfterPhysicsUpdate] = () => {
+            utils.isBindPressed(this.#config.toggleStateData) && this.toggleState(physics);
+
+            if (this.#state !== true) return this.setRayLenght(chassis, 50);
+    
+            this.keyHandler(camera.currState_0.direction),
+            this.alignTank(physics, camera.currState_0.direction), 
+            this.setPosition(physics), 
+            physics.body.movable = (this.#config.typeData.state === 'airWalk'),
+            this.#config.typeData.state === 'airWalk' && this.setRayLenght(chassis, 1e+100);
+        } : utils.debug(__filename, 240, 'AirBreak::process', 'runAfterPhysicsUpdate (expected string) invalid');
     };
 }

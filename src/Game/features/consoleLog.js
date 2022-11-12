@@ -1,4 +1,6 @@
-import { consoleLog } from '../../index.js';
+import { consoleLog, utils } from '../../index.js';
+
+const __filename = 'src/Game/features/consoleLog.js';
 
 export default class ConsoleLog {
     #initialized = false;
@@ -20,14 +22,12 @@ export default class ConsoleLog {
             'color: #FF7C7C;' : 'color: #50B6FF;';
     }
 
-    getTime = () => {
-        let date = new Date();
-        return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
-    }
-
     process = (chat, action) => {
-        if (!chat || !action || this.#initialized)
+        if (this.#initialized)
             return;
+            
+        if (!chat || !action)
+            return utils.debug(__filename, 30, 'ConsoleLog::process', `chat (expected BattleChatComponent, type ${typeof chat}) or action (expected TankActionLogComponent, type: ${typeof action}) invalid`);
 
         this.#initialized = true;
 
@@ -40,13 +40,13 @@ export default class ConsoleLog {
         !action.leave && (action.leave = action.onUserLeaveTheBattle_0);
 
         chat.onUserMessage_0 = function (t) {
-            console.log(`${consoleLog.getTime()} - %c${consoleLog.getName(t.userLabelData)}:`,
+            console.log(`${utils.getTime()} - %c${consoleLog.getName(t.userLabelData)}:`,
                 consoleLog.getColor(t.userLabelData), `${t.message}`);
             return this.userCopy(t);
         }
 
         chat.onTeamMessage_0 = function (t) {
-            console.log(`${consoleLog.getTime()} - %c${consoleLog.getName(t.userLabelData)}: ${t.message}`,
+            console.log(`${utils.getTime()} - %c${consoleLog.getName(t.userLabelData)}: ${t.message}`,
                 'color: #50B6FF');
             return this.teamCopy(t);
         }
@@ -55,7 +55,7 @@ export default class ConsoleLog {
             let killerName = consoleLog.getName(t.killerUserLabelData),
                 destroyedName = consoleLog.getName(t.destroyedUserLabelData);
 
-            console.log(`${consoleLog.getTime()} - %c${killerName} %cdestroyed %c${destroyedName} %cwith an %c${t.damageType.name}`,
+            console.log(`${utils.getTime()} - %c${killerName} %cdestroyed %c${destroyedName} %cwith an %c${t.damageType.name}`,
                 consoleLog.getColor(t.killerUserLabelData), '',
                 consoleLog.getColor(t.destroyedUserLabelData), '',
                 'color: red;');
@@ -64,19 +64,19 @@ export default class ConsoleLog {
         }
 
         action.onTankSuicide_0 = function (t) {
-            console.log(`${consoleLog.getTime()} - %c${consoleLog.getName(t.userLabelData)}`, 
+            console.log(`${utils.getTime()} - %c${consoleLog.getName(t.userLabelData)}`, 
                 consoleLog.getColor(t.userLabelData), 'suicide');
             return this.suicide(t);
         }
 
         action.onUserJoinTheBattle_0 = function (t) {
-            console.log(`${consoleLog.getTime()} - %c${consoleLog.getName(t.userLabelData)}`, 
+            console.log(`${utils.getTime()} - %c${consoleLog.getName(t.userLabelData)}`, 
                 consoleLog.getColor(t.userLabelData), 'join');
             return this.join(t);
         }
 
         action.onUserLeaveTheBattle_0 = function (t) {
-            console.log(`${consoleLog.getTime()} - %c${consoleLog.getName(t.userLabelData)}`, 
+            console.log(`${utils.getTime()} - %c${consoleLog.getName(t.userLabelData)}`, 
                 consoleLog.getColor(t.userLabelData), 'leave');
             return this.leave(t);
         }

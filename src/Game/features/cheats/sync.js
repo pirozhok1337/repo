@@ -1,5 +1,7 @@
 import { config, utils, sync, gameObjects, packetControl } from '../../../index.js';
 
+const __filename = 'src/Game/features/cheats/sync.js';
+
 export default class Sync {
     #initialized = false;
     #lastSendState = {
@@ -44,7 +46,7 @@ export default class Sync {
 
             if (utils.isArrayValid(shells)) {
                 for (const shell of shells) {
-                    shell.components_0.array[1].direction.init_y2kzbl$(0, 0, 0);
+                    utils.match(shell.components_0.array[1].direction, 'init_')?.[0](0, 0, 0);
                 }
 
                 state = true;
@@ -58,19 +60,19 @@ export default class Sync {
         if (packetControl.responseTime >= 2500)
             return;
 
-        let health = gameObjects.localTank?.['HealthComponent']?.health;
+        const tankState = gameObjects.localTank?.['TankComponent']?.state;
 
-        if (typeof health === 'number' && health !== 0) {
+        if (tankState?.name === 'ACTIVE') {
             let result = utils.isNotKillZone(state.position);
 
             if (result !== 0)
                 utils.outKillZone(state.position, result);
 
             if (gameObjects.localTank['StrikerWeapon'] && !this.skip && !this.forceSkip) {
-                if (state.position.distance_ry1qwf$(this.#lastSendState.position) < 300)
+                if (utils.match(state.position, 'distance_')?.(this.#lastSendState.position) < 300)
                     return;
             } else {
-                if (state.position.distance_ry1qwf$(this.#lastSendState.position) < 300 && this.compareOrientation(state))
+                if (utils.match(state.position, 'distance_')?.(this.#lastSendState.position) < 300 && this.compareOrientation(state))
                     return;
             }
 
@@ -114,21 +116,29 @@ export default class Sync {
             sender.sendState_0(sender.tankPhysicsComponent_0.getInterpolatedBodyState());
         }
 
-        if (!sender || this.#initialized)
+        if (this.#initialized)
             return;
 
-        this.#initialized = !!(chassisServer.onControlChanged_0 = sender.runAfterPhysicsUpdate_mx4ult$ = () => {})
+        if (!sender || !chassisServer)
+            return utils.debug(__filename, 122, 'Sync::process', 'sender (expected LocalTankStateServerSenderComponent) invalid');
+
+        this.#initialized = true;
 
         setInterval((function() {
-            root.state.battlePauseState.idleKickPeriodInMsec.low_ = -1;
-            this.chassis_0.controlState.moveForward = 1;
-            this.serverInterface_0.sendChassisControl_t8q23h$(this.world.physicsTime, this.chassis_0.controlState);
-            this.chassis_0.controlState.moveForward = 0;
-            this.serverInterface_0.sendChassisControl_t8q23h$(this.world.physicsTime, this.chassis_0.controlState);
+            root.state.battlePauseState.idleKickPeriodInMsec.low_ = 12000000;
+            const sendChassisControl = utils.match(this.serverInterface_0, 'sendChassisControl_');
+
+            if (!sendChassisControl)
+                return utils.debug(__filename, 131, 'Sync::process::interval:126', 'sendChassisControl (expected function) invalid');
+
+            this.onControlChanged_0 = () => {};
+
+            this.chassis_0.controlState.moveForward = 1, sendChassisControl(this.world.physicsTime, this.chassis_0.controlState);
+            this.chassis_0.controlState.moveForward = 0, sendChassisControl(this.world.physicsTime, this.chassis_0.controlState);
         }).bind(chassisServer), 30000);
 
         sender.__proto__.sendState_0 = function(t) {
-            if (sync.forceSkip || (t.position && t.position.x === 0 && t.position.y === 0 && t.position.z === 0))
+            if (sync.forceSkip)
                 return;
 
             if (sync.skip)

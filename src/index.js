@@ -37,6 +37,8 @@ export const filters        = unsafeWindow.filters        = new Filters;
 export const packetControl  = unsafeWindow.packetControl  = new PacketControl;
 export const striker        = unsafeWindow.striker        = new Striker;
 
+const __filename = 'src/index.js';
+
 const resets = () => {
     airBreak.reset();
     cameraHack.reset();
@@ -53,8 +55,7 @@ if (!document.URL.includes('test-eu.tankionline.com')) {
     throw new Error('stop');
 }
 
-if (GM_info.script.version !== pjson.version)
-{
+if (GM_info.script.version !== pjson.version) {
     alert('У вас установлена устаревшая версия скрипта!\nYou have an outdated version of the script installed!');
     unsafeWindow.open('https://raw.githubusercontent.com/sheezzmee/shizoval/main/shizoval.user.js', '_self');
     throw new Error('stop');
@@ -64,7 +65,6 @@ if (GM_info.script.version !== pjson.version)
     requestAnimationFrame(main);
 
     const root                  = gameObjects.root,
-        world                   = gameObjects.world,
         gameMode                = gameObjects.gameMode,
         tank                    = gameObjects.localTank,
         tankPhysics             = tank?.['TankPhysicsComponent'],
@@ -88,9 +88,9 @@ if (GM_info.script.version !== pjson.version)
         strikerLocking          = tank?.['LocalLockingComponent']?.lockingServerInterface_0;
 
     if (!root)
-        return;
+        return utils.debug(__filename, 90, 'main', 'root === undefined (expected object)');
 
-    storeOpener.openStore(root); 
+    storeOpener.openStore(root);
 
     if (!root.state?.battleStatistics?.inBattle())
         return gameObjects.reset(), resets();
@@ -104,7 +104,7 @@ if (GM_info.script.version !== pjson.version)
     if (!tank || !utils.isArrayValid(tank['originalArray']))
         return resets();
 
-    airBreak.process(tankPhysics, camera, chassis);
+    airBreak.process(tankPhysics, camera, chassis, sender);
     cameraHack.process(camera, cameraController);
     stick.process(tankPhysics);
     clicker.process(supplies);

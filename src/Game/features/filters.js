@@ -1,13 +1,15 @@
-import { config } from '../../index.js';
+import { config, utils } from '../../index.js';
+
+const __filename = 'src/Game/features/filters.js';
 
 export default class Filters {
     #config = config.data.filtersData;
 
     process = () => {
-        const canvas = document.getElementsByClassName('sc-bdVaJa jKLJbX')[0];
+        const canvas = document.querySelector('#root > div > canvas');
 
         if (!canvas)
-            return;
+            return utils.debug(__filename, 11, 'Filters::process', 'canvas (expected HTMLCanvasElement) invalid');
 
         let filter = '';
 

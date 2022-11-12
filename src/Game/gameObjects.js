@@ -1,5 +1,7 @@
 import { utils } from '../index.js';
 
+const __filename = 'src/Game/gameObjects.js';
+
 export default class GameObjects {
     #root;
     #world;
@@ -13,7 +15,7 @@ export default class GameObjects {
         const root = document.getElementById('root');
 
         if (!root)
-            return;
+            return utils.debug(__filename, 17, 'GameObjects::get root', 'root (expected HTMLElement) invalid');
 
         return this.#root = root._reactRootContainer?._internalRoot?.current?.memoizedState?.
             element?.type?.prototype?.store;
@@ -39,10 +41,13 @@ export default class GameObjects {
         if (this.#localTank && utils.isArrayValid(this.#localTank['originalArray']))
             return this.#localTank;
 
-        let possesedTank = this.gameMode?.['originalArray'][0]?.gameMode_0?.possesedTank;
+        if (!this.gameMode)
+            return;
+
+        let possesedTank = this.gameMode['originalArray'][0]?.gameMode_0?.possesedTank;
 
         if (!possesedTank)
-            return;
+            return utils.debug(__filename, 46, 'GameObjects::get localtank', 'possedTank (expected BattleEntity) invalid');
 
         this.#localTank = utils.getComponentNames(possesedTank.components_0?.array);
 

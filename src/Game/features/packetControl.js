@@ -29,8 +29,8 @@ setInterval(() => {
     counter >= 30 && counter <= 70 && (pps.style.color = 'rgb(255, 188, 9)'); // хуево
     counter > 70 && (pps.style.color = 'rgb(255, 82, 9)'); // все пизда
 
-
     pps.textContent = counter.toString();
+    
     packetControl.packetCounter = 0;
 }, 1000);
 

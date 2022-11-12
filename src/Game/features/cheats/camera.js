@@ -1,5 +1,7 @@
 import { config, airBreak, utils, cameraHack } from '../../../index.js';
 
+const __filename = 'src/Game/features/cheats/camera.js';
+
 export default class Camera {
     #distance = 1500;
     #index = 0;
@@ -50,8 +52,11 @@ export default class Camera {
         utils.isBindPressed(spectateConfig.deactivateData) && this.deactivate();
         utils.isBindPressed(spectateConfig.nextTargetData) && this.nextTarget();
 
-        if (this.#initialized || !camera || !controller)
+        if (this.#initialized)
             return;
+
+        if (!camera || !controller)
+            return utils.debug(__filename, 58, 'Camera::process', `controller (expected FollowCameraHeightController, type: ${typeof controller}) or camera (expected FollowCamera, type: ${typeof camera}) invalid`);
 
         this.#camera = camera;
 
@@ -65,21 +70,21 @@ export default class Camera {
         }
 
         camera.polarDistance_0.update_dleff0$ = function (t, e) {
-            if (cameraHack.#config.state === false) 
+            if (cameraHack.#config.state === false || !document.pointerLockElement) 
                 return this.copy(t, e);
 
             this.value += (cameraHack.#distance - this.value) / 20;
         };
 
         camera.pitch_0.update_dleff0$ = function (t, e) {
-            if (cameraHack.#config.state === false) 
+            if (cameraHack.#config.state === false || !document.pointerLockElement) 
                 return this.copy(t, e);
 
             this.value = camera.absoluteIdealPitch_0;
         };
 
         camera.elevation_0.update_dleff0$ = function (t, e) {
-            if (cameraHack.#config.state === false) 
+            if (cameraHack.#config.state === false || !document.pointerLockElement) 
                 return this.copy(t, e);
             
             this.value = e;
@@ -92,14 +97,14 @@ export default class Camera {
         };
 
         controller.cameraDown_0 = function (t) {
-            if ((airBreak.state && utils.getKeyState('KeyE')) || cameraHack.#config.state)
+            if ((airBreak.state && utils.isBindPressed(config.data.airBreakData.movementData.config.down)) || (cameraHack.#config.state && document.pointerLockElement))
                 return this.down_0 = false;
 
             this.down_0 = t.isPressed;
         };
 
         controller.cameraUp_0 = function (t) {
-            if ((airBreak.state && utils.getKeyState('KeyQ')) || cameraHack.#config.state)
+            if ((airBreak.state && utils.isBindPressed(config.data.airBreakData.movementData.config.up)) || (cameraHack.#config.state && document.pointerLockElement))
                 return this.up_0 = false;
 
             this.up_0 = t.isPressed;

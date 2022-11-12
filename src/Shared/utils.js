@@ -41,6 +41,18 @@ const remasterMaps = [
 ]
 
 export default class Utils {
+    getTime = () => {
+        let date = new Date(),
+            hours = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours(),
+            minutes = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes(),
+            seconds = date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds();
+        return `${hours}:${minutes}:${seconds}`;
+    }
+
+    debug = function() {
+        console.debug(`[SHIZOVAL:${arguments[0]}:${arguments[1]}] ${this.getTime()} - Function ${arguments[2]} -`, arguments[3]);
+    }
+
     isArrayPressed = (keys) => {
         if (!this.isArrayValid(keys)) 
             return false;
@@ -90,7 +102,7 @@ export default class Utils {
     }
 
     getComponentNames = (array) => {
-        if (!utils.isArrayValid(array))
+        if (!this.isArrayValid(array))
             return;
 
         let obj = {};
@@ -253,5 +265,23 @@ export default class Utils {
 
     getRandomArbitrary = (min, max) => {
         return Math.floor(Math.random() * (max - min) + min);
+    }
+
+    match = (obj, property, type = 'function', resultString = false) => {
+        const properties = Array.prototype.concat(Object.keys(obj), Object.keys(obj.__proto__));
+        const result = [];
+    
+        for (const prop of properties) {
+            if (prop.includes(property)) {
+                if (typeof obj[prop] === type) {
+                    if (type === 'function')
+                        resultString ? result.push(prop) : result.push(obj[prop].bind(obj));
+                    else
+                        resultString ? result.push(prop) : result.push(obj[prop]);
+                }
+            }
+        }
+    
+        return result.length === 1 ? result[0] : result.length === 0 ? undefined : result;
     }
 }

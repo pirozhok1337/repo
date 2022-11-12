@@ -35,12 +35,10 @@ export default class Clicker {
             }
         }
 
-        const state = gameObjects.localTank?.['TankPhysicsComponent'].body?.state;
+        const tankState = gameObjects.localTank?.['TankComponent']?.state;
 
-        if (state?.position && state.position.x !== 0 && state.position.y !== 0 && state.position.z !== 0) {
-            if (gameObjects.localTank?.['HealthComponent']?.health !== 0 && packetControl.responseTime <= time)
-                this.getSupplyByName(name)?.onUserActivatedSupply();
-        }
+        if (tankState?.name === 'ACTIVE' && packetControl.responseTime <= time)
+            this.getSupplyByName(name)?.onUserActivatedSupply();
     }
 
     suppliesHighPriority = () => {
