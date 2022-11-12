@@ -226,7 +226,10 @@ export default class AirBreak {
         };
     }
 
-    reset = () => this.#state = false;
+    reset = () => {
+        this.#state = false;
+        this.#initialized = false;
+    }
 
     process = (physics, camera, chassis, sender) => {
         if (this.#initialized)
@@ -243,7 +246,7 @@ export default class AirBreak {
             utils.isBindPressed(this.#config.toggleStateData) && this.toggleState(physics);
 
             if (this.#state !== true) return this.setRayLenght(chassis, 50);
-    
+        
             this.keyHandler(camera.currState_0.direction),
             this.alignTank(physics, camera.currState_0.direction), 
             this.setPosition(physics), 

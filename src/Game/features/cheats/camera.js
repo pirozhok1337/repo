@@ -97,14 +97,14 @@ export default class Camera {
         };
 
         controller.cameraDown_0 = function (t) {
-            if ((airBreak.state && utils.isBindPressed(config.data.airBreakData.movementData.config.down)) || (cameraHack.#config.state && document.pointerLockElement))
+            if ((airBreak.state && utils.isBindPressed(config.data.airBreakData.movementData.down)) || (cameraHack.#config.state && document.pointerLockElement))
                 return this.down_0 = false;
 
             this.down_0 = t.isPressed;
         };
 
         controller.cameraUp_0 = function (t) {
-            if ((airBreak.state && utils.isBindPressed(config.data.airBreakData.movementData.config.up)) || (cameraHack.#config.state && document.pointerLockElement))
+            if ((airBreak.state && utils.isBindPressed(config.data.airBreakData.movementData.up)) || (cameraHack.#config.state && document.pointerLockElement))
                 return this.up_0 = false;
 
             this.up_0 = t.isPressed;

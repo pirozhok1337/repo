@@ -268,6 +268,9 @@ export default class Utils {
     }
 
     match = (obj, property, type = 'function', resultString = false) => {
+        if (!obj)
+            return;
+
         const properties = Array.prototype.concat(Object.keys(obj), Object.keys(obj.__proto__));
         const result = [];
     
