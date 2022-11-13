@@ -1,7 +1,7 @@
 export default class Config {
     data = {
         airBreakData: {
-            ID: '0',
+            ID: '2',
             movementData: {
                 forward: {
                     bind: {
@@ -108,11 +108,13 @@ export default class Config {
                     pressed: false,
                     state: false
                 }
-            }
+            },
+            flip: false,
+            tilt: true
         },
         removeMinesData: {
             ID: '0',
-            state: false,
+            state: true,
             type: 'ALL'
         },
         noKnockbackData: {
@@ -123,7 +125,7 @@ export default class Config {
             ID: '2',
             autoHealingClicker: false,
             speedHack: false,
-            freezeTanks: false,
+            freezeTanks: true,
             noCollision: false,
             showAlert: true,
             autoShot: false

@@ -55,39 +55,41 @@ export default class AirBreak {
         chassis.params_0.maxRayLength = value;
     }
 
-    align = (body, direction) => {
-        body.state.velocity.z = 0;
-        body.state.angularVelocity.x = 0;
-        body.state.angularVelocity.y = 0;
-        body.state.orientation.x = 0;
-        body.state.orientation.y = 0;
+    align = (body, camera) => {
+        switch (camera) {
+            case 'noob':
+                body.state.angularVelocity.z = 0;
+                body.state.velocity.x = 0;
+                body.state.velocity.y = 0;
+                body.state.orientation.fromEulerAngles_y2kzbl$(0, this.#config.flip ? Math.PI : 0, 0);
+                break;
 
-        if (direction === 'noob') {
-            body.state.angularVelocity.z = 0;
-            body.state.velocity.x = 0;
-            body.state.velocity.y = 0;
-            body.state.orientation.w = 0;
-            body.state.orientation.z = 0;
+            case 0:
+                body.state.velocity.z = 0;
+                body.state.angularVelocity.x = 0;
+                body.state.angularVelocity.y = 0;
+                body.state.orientation.x = 0;
+                body.state.orientation.y = 0;
+            break;
 
-            return;
-        }
-
-        if (direction !== 0) {
-            body.state.angularVelocity.z = 0;
-            body.state.velocity.x = 0;
-            body.state.velocity.y = 0;
-            body.state.orientation.w = Math.sin(-(direction - Math.PI) / 2);
-            body.state.orientation.z = Math.cos(-(direction - Math.PI) / 2);
+            default:
+                body.state.angularVelocity.z = 0;
+                body.state.velocity.x = 0;
+                body.state.velocity.y = 0;
+                body.state.orientation.fromEulerAngles_y2kzbl$(this.#config.tilt ? 
+                    this.#config.flip ? camera.pathPosition : -camera.pathPosition : 0, 
+                    this.#config.flip ? Math.PI : 0, camera.currState_0.direction);
+                break;
         }
     }
 
-    alignTank = (physics, direction) => {
+    alignTank = (physics, camera) => {
         switch (this.#config.typeData.state) {
             case 'airWalk':
                 this.align(physics.body, 0);
                 break;
             case 'default':
-                this.align(physics.body, direction);
+                this.align(physics.body, camera);
                 break;
             case 'noob':
                 this.align(physics.body, 'noob');
@@ -248,7 +250,7 @@ export default class AirBreak {
             if (this.#state !== true) return this.setRayLenght(chassis, 50);
         
             this.keyHandler(camera.currState_0.direction),
-            this.alignTank(physics, camera.currState_0.direction), 
+            this.alignTank(physics, camera), 
             this.setPosition(physics), 
             physics.body.movable = (this.#config.typeData.state === 'airWalk'),
             this.#config.typeData.state === 'airWalk' && this.setRayLenght(chassis, 1e+100);

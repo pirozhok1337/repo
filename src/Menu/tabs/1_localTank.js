@@ -28,6 +28,9 @@ menu.tabs.push({
                 cImGui.ImVec2(0, 0)) && (cfg.typeData.state = 'noob');
 
             ImGui.Checkbox('Limiting Kill Zones', cImGui.access(cfg.killZoneData, 'state'));
+            
+            ImGui.Checkbox('Flip', cImGui.access(cfg, 'flip'));
+            ImGui.Checkbox('Tilt', cImGui.access(cfg, 'tilt'));
         }, 'AirBreak');
 
         ImGui.SameLine();
