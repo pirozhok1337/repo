@@ -65,6 +65,24 @@ export default class Camera {
         camera.elevation_0.copy       = camera.elevation_0.update_dleff0$;
         camera.pivot_0.copy           = camera.pivot_0.update_sl07mc$;
 
+        function coerceIn(t, e, n) {
+            return t < e ? e : t > n ? n : t
+        }
+        
+        Object.defineProperty(camera, 'pathPosition', {
+            get: function() {
+                return this.pathPosition_dl3fsr$_0
+            },
+            set: function(t) {
+                let e = coerceIn(t, -Math.PI / 2, Math.PI / 2);
+                this.pathPointElevation_0 = this.pathPosition_dl3fsr$_0 = e,
+                this.pathPositionOffset_0 = coerceIn(this.pathPositionOffset_0, -e, 1 - e),
+                this.updatePathPoint_0()
+            },
+            enumerable: true,
+            configurable: true
+        })
+
         camera.getCollisionTime_0 = function () {
             return 1;
         }
@@ -80,14 +98,14 @@ export default class Camera {
             if (cameraHack.#config.state === false || !document.pointerLockElement) 
                 return this.copy(t, e);
 
-            this.value = camera.absoluteIdealPitch_0;
+            this.value = camera.pathPosition;
         };
 
         camera.elevation_0.update_dleff0$ = function (t, e) {
             if (cameraHack.#config.state === false || !document.pointerLockElement) 
                 return this.copy(t, e);
             
-            this.value = e;
+            this.value = camera.pathPosition + 0.2;
         };
 
         camera.pivot_0.update_sl07mc$ = function (t, e) {
