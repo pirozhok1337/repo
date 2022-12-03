@@ -58,9 +58,8 @@ export default class AirBreak {
     align = (body, camera) => {
         switch (camera) {
             case 'noob':
-                body.state.angularVelocity.z = 0;
-                body.state.velocity.x = 0;
-                body.state.velocity.y = 0;
+                body.state.velocity.init_y2kzbl$(0, 0, 0);
+                body.state.angularVelocity.init_y2kzbl$(0, 0, 0);
                 body.state.orientation.fromEulerAngles_y2kzbl$(0, this.#config.flip ? Math.PI : 0, 0);
                 break;
 
@@ -73,9 +72,8 @@ export default class AirBreak {
             break;
 
             default:
-                body.state.angularVelocity.z = 0;
-                body.state.velocity.x = 0;
-                body.state.velocity.y = 0;
+                body.state.velocity.init_y2kzbl$(0, 0, 0);
+                body.state.angularVelocity.init_y2kzbl$(0, 0, 0);
                 body.state.orientation.fromEulerAngles_y2kzbl$(this.#config.tilt ? 
                     this.#config.flip ? camera.pathPosition : -camera.pathPosition : 0, 
                     this.#config.flip ? Math.PI : 0, camera.currState_0.direction);
