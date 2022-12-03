@@ -2,6 +2,14 @@
 
 Discord: **солевой#4769**
 
+## Использование
+
+На выбор есть два способа игры с читом:
+
+**1.** [Сайт со встроенным читом](https://shizoval-site.vercel.app/) (Преимущество - не нужно ничего устанавливать)
+
+**2.** Установка скрипта (Преимущество - более стабильная работа)
+
 ## Установка
 
 **1.** Установите [Tampermonkey](https://www.tampermonkey.net/)
@@ -115,42 +123,6 @@ requestAnimationFrame(function boxTeleport() {
         physics.body.state.position.init_ry1qwf$(object3d.aabb.center);
     }
 })
-```
-
-```js
-/*  SHIZOVAL
-*  Автор кода: sheezzmee
-*  Название: Flip simple tp
-*  Описание: Переворачивает танк на спину (хз нах но просили сделать)
-*  Активация: автоматическая
-*/
-
-airBreak.align = (body, direction) => {
-    body.state.velocity.z = 0;
-    body.state.angularVelocity.x = 0;
-    body.state.angularVelocity.y = 0;
-    body.state.orientation.x = 0;
-    body.state.orientation.y = 0;
-
-    if (direction === 'noob') {
-        body.state.angularVelocity.z = 0;
-        body.state.velocity.x = 0;
-        body.state.velocity.y = 0;
-        body.state.orientation.w = 0;
-        body.state.orientation.z = 0;
-        body.state.orientation.y = 1;
-
-        return;
-    }
-
-    if (direction !== 0) {
-        body.state.angularVelocity.z = 0;
-        body.state.velocity.x = 0;
-        body.state.velocity.y = 0;
-        body.state.orientation.w = Math.sin(-(direction - Math.PI) / 2);
-        body.state.orientation.z = Math.cos(-(direction - Math.PI) / 2);
-    }
-}
 ```
 
 Если вы хотите, чтобы я выставил ваш скрипт сюда (авторство будет указано), то присылайте его мне в дс (там выше)
