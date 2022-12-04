@@ -4,7 +4,10 @@ const __filename = 'src/Game/features/cheats/sync.js';
 
 export default class Sync {
     #initialized = false;
-    #lastSendState = {
+    #nextTime = 0;
+    #aafk = undefined;
+    #config = config.data.syncData;
+    lastSendState = {
         position: {
             x: 0, y: 0, z: 0
         },
@@ -12,9 +15,6 @@ export default class Sync {
             x: 0, y: 0, z: 0, w: 0
         }
     };
-    #nextTime = 0;
-    #aafk = undefined;
-    #config = config.data.syncData;
     skip = false;
     forceSkip = false;
     isRandomTPEnabled = false;
@@ -56,9 +56,9 @@ export default class Sync {
             killZone = utils.getKillZone(map);
 
         if (killZone) {
-            t.position.x = utils.getUniqueRandomArbitrary(this.#lastSendState.position.x, 3000,
+            t.position.x = utils.getUniqueRandomArbitrary(this.lastSendState.position.x, 3000,
                 killZone.minX, killZone.maxX);
-            t.position.y = utils.getUniqueRandomArbitrary(this.#lastSendState.position.y, 3000, 
+            t.position.y = utils.getUniqueRandomArbitrary(this.lastSendState.position.y, 3000, 
                 killZone.minY, killZone.maxY);
             t.position.z = !Math.round(Math.random()) ? map.bounds.maxZ + 500 : killZone.maxZ;
 
@@ -71,7 +71,7 @@ export default class Sync {
         if (this.skip || this.forceSkip)
             return false;
 
-        return utils.match(position, 'distance_')?.(this.#lastSendState.position) < 300;
+        return utils.match(position, 'distance_')?.(this.lastSendState.position) < 300;
     }
 
     sendUpdate = (sender, state) => {
@@ -91,8 +91,8 @@ export default class Sync {
         if (gameObjects.localTank['StrikerWeapon'] && this.compareDistance(state.position))
             return;
 
-        this.#lastSendState.position = state.position.clone();
-        this.#lastSendState.orientation = state.orientation.clone();
+        this.lastSendState.position = state.position.clone();
+        this.lastSendState.orientation = state.orientation.clone();
 
         state.velocity.init_y2kzbl$(0, 0, 0);
         state.angularVelocity.init_y2kzbl$(0, 0, 0);

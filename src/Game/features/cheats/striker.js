@@ -49,6 +49,14 @@ export default class Striker {
 
             server.staticHit_0 = () => {};    
             server.selfDestruct_0 = () => {};
+            server.tankHit_0 = function (t) {
+                this.updateState_0();
+
+                if (utils.match(this.shellStates_0.lastKnownState_0.position, 'distance_')?.(sync.lastSendState.position) > 1100) {
+                    this.serverInterface_0.tryToHit_nn87qu$(this.world.physicsTime, this.raycastShell_0.shellId,
+                        this.shellStates_0, t.targetEntity);
+                }
+            }
         }
 
         if (!shellsConfig.state || !this.rocketTP.target)
@@ -63,17 +71,10 @@ export default class Striker {
         if (this.rocketTP.state !== true && shells.length === strikerComponent.salvoRocketsCount && 
                 !this.rocketTP.timeout) 
         {
-            const lastShell = shells.at(-1).components,
-                distance = lastShell?.['RaycastShell']?.barrelOrigin.distance_ry1qwf$(targetState.position);
-
-            if (this.rocketTP.teleportToTarget) {
-                this.rocketTP.timeout = setTimeout(() => {
-                    this.rocketTP.state = true;
-                    this.rocketTP.timeout = undefined;
-                }, 2000);
-            } else if (lastShell?.['StrikerRocket']?.distance_0 >= distance) {
+            this.rocketTP.timeout = setTimeout(() => {
                 this.rocketTP.state = true;
-            }
+                this.rocketTP.timeout = undefined;
+            }, 2000);
         }
 
         if (utils.isBindPressed(shellsConfig))
@@ -89,12 +90,14 @@ export default class Striker {
 
         this.rocketTP.state = false;
 
-        for (const shell of shells) {
-            const server = shell.components['StrikerRocketComponent'];
-            
-            server.shellStates_0.lastKnownState_0.position.init_ry1qwf$(targetState.position);
-            server.serverInterface_0.tryToHit_nn87qu$(server.world.physicsTime, server.raycastShell_0.shellId, 
-                server.shellStates_0);
+        if (utils.match(targetState.position, 'distance_')?.((sync.lastSendState.position)) > 1100) {
+            for (const shell of shells) {
+                const server = shell.components['StrikerRocketComponent'];
+                
+                server.shellStates_0.lastKnownState_0.position.init_ry1qwf$(targetState.position);
+                server.serverInterface_0.tryToHit_nn87qu$(server.world.physicsTime, server.raycastShell_0.shellId, 
+                    server.shellStates_0);
+            }
         }
 
         for (let i = 0; i < strikerComponent.salvoRocketsCount; i++) {

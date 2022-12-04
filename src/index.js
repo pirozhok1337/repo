@@ -92,7 +92,7 @@ if (GM_info.script.version !== pjson.version) {
 
     storeOpener.openStore(root);
 
-    if (!root.state?.battleStatistics?.inBattle())
+    if (!root.state?.battleStatistics?.inBattle() || !root.state?.battleStatistics?.isParkourMode)
         return gameObjects.reset(), resets();
 
     removeMines.process(mines);
