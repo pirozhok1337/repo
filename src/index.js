@@ -50,11 +50,6 @@ const resets = () => {
     striker.reset();
 }
 
-if (!document.URL.includes('test-eu.tankionline.com')) {
-    alert('Используйте только на тестовом сервере и только в режиме паркур!\nUse only on the test server and only in parkour mode!');
-    throw new Error('stop');
-}
-
 if (GM_info.script.version !== pjson.version) {
     alert('У вас установлена устаревшая версия скрипта!\nYou have an outdated version of the script installed!');
     unsafeWindow.open('https://raw.githubusercontent.com/sheezzmee/shizoval/main/shizoval.user.js', '_self');
@@ -92,7 +87,7 @@ if (GM_info.script.version !== pjson.version) {
 
     storeOpener.openStore(root);
 
-    if (!root.state?.battleStatistics?.inBattle() || !root.state?.battleStatistics?.isParkourMode)
+    if (!root.state?.battleStatistics?.inBattle())
         return gameObjects.reset(), resets();
 
     removeMines.process(mines);

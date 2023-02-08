@@ -99,10 +99,6 @@ export default class Striker {
                     server.shellStates_0);
             }
         }
-
-        for (let i = 0; i < strikerComponent.salvoRocketsCount; i++) {
-            strikerComponent.explodeRockets();
-        }
     }
 
     aimBot = (physics, weaponTrigger, turret) => {
