@@ -16,7 +16,6 @@ import WallHack from './Game/features/cheats/wallhack.js';
 import Filters from './Game/features/filters.js';
 import PacketControl from './Game/features/packetControl.js';
 import Striker from './Game/features/cheats/striker.js';
-import pjson from '../package.json';
 
 export const utils          = unsafeWindow.utils          = new Utils;
 export const gameObjects    = unsafeWindow.gameObjects    = new GameObjects;
@@ -48,12 +47,6 @@ const resets = () => {
     sync.reset();
     consoleLog.reset();
     striker.reset();
-}
-
-if (GM_info.script.version !== pjson.version) {
-    alert('У вас установлена устаревшая версия скрипта!\nYou have an outdated version of the script installed!');
-    unsafeWindow.open('https://raw.githubusercontent.com/sheezzmee/shizoval/main/shizoval.user.js', '_self');
-    throw new Error('stop');
 }
 
 (function main() {
