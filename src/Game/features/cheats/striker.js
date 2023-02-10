@@ -231,7 +231,7 @@ export default class Striker {
                     targetState = target?.['TankPhysicsComponent']?.body?.state;
 
                 if (!targetState) 
-                    return strikerComponent.explodeRockets();
+                    return;
                     
                 t.direction.init_y2kzbl$(0, 0, 0);
 
